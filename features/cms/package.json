@@ -1,0 +1,44 @@
+{
+  "name": "@damon-stack/feature-cms",
+  "version": "1.0.0",
+  "description": "Content Management System feature module for Damon Stack",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
+    "./api": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch"
+  },
+  "dependencies": {
+    "@damon-stack/ui": "workspace:*",
+    "@damon-stack/db": "workspace:*",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "tsup": "^8.3.0",
+    "typescript": "^5.6.3"
+  },
+  "peerDependencies": {
+    "react": "19.0.0",
+    "react-dom": "19.0.0",
+    "@mantine/core": "8.1.1",
+    "@mantine/hooks": "8.1.1",
+    "@mantine/form": "8.1.1",
+    "@mantine/notifications": "8.1.1",
+    "@mantine/modals": "8.1.1",
+    "@tabler/icons-react": "^3.26.0",
+    "@prisma/client": "^5.20.0"
+  }
+} 

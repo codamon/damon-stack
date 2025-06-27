@@ -1,0 +1,103 @@
+// CMS 文章 (Post) 数据模型
+// 用于存储博客文章、新闻等内容
+
+// 文章状态枚举
+enum PostStatus {
+  DRAFT        // 草稿
+  PUBLISHED    // 已发布  
+  ARCHIVED     // 已归档
+  SCHEDULED    // 定时发布
+}
+
+// 文章模型
+model Post {
+  id          String   @id @default(cuid())
+  
+  // 基础信息
+  title       String   // 文章标题
+  slug        String   @unique // URL 友好的标识符
+  content     String   @db.Text // 富文本 HTML 内容
+  excerpt     String?  // 文章摘要/简介
+  
+  // 媒体信息
+  coverImage  String?  // 封面图片 URL
+  
+  // 状态管理
+  status      PostStatus @default(DRAFT) // 发布状态
+  
+  // SEO 相关
+  metaTitle       String? // SEO 标题
+  metaDescription String? // SEO 描述
+  keywords        String? // 关键词，逗号分隔
+  
+  // 排序和组织
+  order       Int      @default(0) // 排序权重
+  featured    Boolean  @default(false) // 是否精选
+  
+  // 统计信息
+  viewCount   Int      @default(0) // 浏览次数
+  likeCount   Int      @default(0) // 点赞次数
+  
+  // 发布时间
+  publishedAt DateTime? // 发布时间
+  scheduledAt DateTime? // 定时发布时间
+  
+  // 关联关系
+  authorId    String   // 作者 ID
+  author      User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  
+  categoryId  String?  // 分类 ID（可选）
+  category    Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  
+  // 标签关联（多对多）
+  tags        PostTag[]
+  
+  // 时间戳
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // 数据库索引
+  @@index([status])
+  @@index([authorId])
+  @@index([categoryId])
+  @@index([publishedAt])
+  @@index([slug])
+  @@index([featured])
+  @@map("posts")
+}
+
+// 标签模型
+model Tag {
+  id          String   @id @default(cuid())
+  name        String   @unique // 标签名称
+  slug        String   @unique // URL 友好标识符
+  description String?  // 标签描述
+  color       String?  // 标签颜色
+  
+  // 关联关系
+  posts       PostTag[]
+  
+  // 时间戳
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("tags")
+}
+
+// 文章-标签关联表（多对多）
+model PostTag {
+  id     String @id @default(cuid())
+  
+  postId String
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  
+  tagId  String  
+  tag    Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  
+  // 时间戳
+  createdAt DateTime @default(now())
+  
+  // 确保同一篇文章不能重复添加同一个标签
+  @@unique([postId, tagId])
+  @@map("post_tags")
+} 

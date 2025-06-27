@@ -2,11 +2,49 @@
     "name": "damon-stack",
     "private": true,
     "scripts": {
-      "dev": "turbo dev",
-      "build": "turbo build",
-      "lint": "turbo lint"
+        "dev": "turbo dev",
+        "dev:all": "turbo dev",
+        "dev:admin": "pnpm --filter @damon-stack/admin-dashboard dev",
+        "dev:website": "pnpm --filter @damon-stack/website dev",
+        "dev:blog": "pnpm --filter @damon-stack/blog dev",
+        "build": "turbo build",
+        "build:all": "turbo build",
+        "build:admin": "pnpm --filter @damon-stack/admin-dashboard build",
+        "build:website": "pnpm --filter @damon-stack/website build",
+        "build:blog": "pnpm --filter @damon-stack/blog build",
+        "start": "turbo start",
+        "start:admin": "pnpm --filter @damon-stack/admin-dashboard start",
+        "start:website": "pnpm --filter @damon-stack/website start",
+        "start:blog": "pnpm --filter @damon-stack/blog start",
+        "lint": "turbo lint",
+        "lint:all": "turbo lint",
+        "lint:admin": "pnpm --filter @damon-stack/admin-dashboard lint",
+        "lint:website": "pnpm --filter @damon-stack/website lint",
+        "lint:blog": "pnpm --filter @damon-stack/blog lint",
+        "status": "./scripts/check-apps-status.sh",
+        "db:push": "pnpm --filter @damon-stack/db exec prisma db push",
+        "db:studio": "pnpm --filter @damon-stack/db exec prisma studio",
+        "db:generate": "pnpm --filter @damon-stack/db exec prisma generate"
     },
     "devDependencies": {
-      "turbo": "^1.10.0" 
+        "turbo": "^1.10.0"
+    },
+        "pnpm": {
+      "overrides": {
+        "@mantine/core": "8.1.2",
+        "@mantine/hooks": "8.1.2", 
+        "react": "19.0.0",
+        "react-dom": "19.0.0",
+        "@types/react": "19.1.6",
+        "@types/react-dom": "19.1.6"
+      }
+    },
+    "dependencies": {
+        "@mantine/core": "8.1.2",
+        "@mantine/dates": "^8.1.2",
+        "@mantine/form": "^8.1.2",
+        "@mantine/hooks": "8.1.2",
+        "@mantine/modals": "^8.1.2",
+        "@mantine/notifications": "^8.1.2"
     }
-  }
+}

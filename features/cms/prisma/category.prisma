@@ -1,0 +1,20 @@
+// Category model for CMS feature
+model Category {
+  id          String   @id @default(cuid())
+  name        String   @db.VarChar(255)
+  slug        String   @unique @db.VarChar(255)
+  description String?  @db.Text
+  parentId    String?  @db.VarChar(255)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Self-referential relationship for hierarchical categories
+  parent   Category?  @relation("CategoryTree", fields: [parentId], references: [id], onDelete: Cascade)
+  children Category[] @relation("CategoryTree")
+
+  // Future: relation to posts (will be added later)
+  // posts Post[]
+
+  @@map("cms_categories")
+} 

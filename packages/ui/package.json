@@ -1,0 +1,66 @@
+{
+  "name": "@damon-stack/ui",
+  "version": "0.1.0",
+  "description": "共享 UI 组件库，基于 Mantine UI 框架",
+  "private": true,
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "type-check": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "@mantine/core": "^8.0.0",
+    "@mantine/hooks": "^8.0.0",
+    "@tabler/icons-react": "^3.0.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  },
+  "devDependencies": {
+    "@mantine/core": "^8.1.1",
+    "@mantine/hooks": "^8.1.1",
+    "@tabler/icons-react": "^3.29.0",
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "tsup": "^8.5.0",
+    "typescript": "^5.0.0"
+  },
+  "keywords": [
+    "ui",
+    "components",
+    "mantine",
+    "react",
+    "typescript",
+    "monorepo"
+  ],
+  "author": "damon-stack",
+  "license": "MIT",
+  "dependencies": {
+    "@mantine/tiptap": "^8.1.2",
+    "@tiptap/extension-highlight": "^2.22.3",
+    "@tiptap/extension-image": "^2.22.3",
+    "@tiptap/extension-link": "^2.22.3",
+    "@tiptap/extension-placeholder": "^2.22.3",
+    "@tiptap/extension-subscript": "^2.22.3",
+    "@tiptap/extension-superscript": "^2.22.3",
+    "@tiptap/extension-text-align": "^2.22.3",
+    "@tiptap/extension-underline": "^2.22.3",
+    "@tiptap/pm": "^2.22.3",
+    "@tiptap/react": "^2.22.3",
+    "@tiptap/starter-kit": "^2.22.3"
+  }
+}

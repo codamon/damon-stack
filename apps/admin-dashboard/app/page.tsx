@@ -1,103 +1,190 @@
+'use client';
+
+/**
+ * Admin Dashboard 首页
+ * 使用 Mantine UI 和共享组件库重构的现代化界面
+ */
+
+import { useState, useEffect } from 'react';
 import Image from "next/image";
+import { 
+  Center, 
+  Stack, 
+  Loader, 
+  Text, 
+  Title, 
+  Button, 
+  Group, 
+  Badge,
+  Anchor,
+  Container
+} from '@mantine/core';
+// 从共享 UI 包导入组件
+import { Card } from '@damon-stack/ui';
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [isLoading, setIsLoading] = useState(true);
+  const [welcomeData, setWelcomeData] = useState<{
+    message: string;
+    timestamp: string;
+  } | null>(null);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
+  // 模拟数据加载
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setWelcomeData({
+        message: "欢迎使用 damon-stack 管理后台！",
+        timestamp: new Date().toLocaleString()
+      });
+      setIsLoading(false);
+    }, 1500);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (isLoading) {
+    return (
+      <Center style={{ minHeight: '100vh' }}>
+        <Stack align="center" gap="md">
+          <Loader size="lg" color="blue" />
+          <Text c="dimmed">正在加载管理后台...</Text>
+        </Stack>
+      </Center>
+    );
+  }
+
+  return (
+    <Container size="lg" py="xl" style={{ minHeight: '100vh' }}>
+      <Stack gap="xl" align="center">
+        {/* 主标题区域 */}
+        <Stack align="center" gap="md">
+          <Image
+            src="/next.svg"
+            alt="Next.js logo"
+            width={180}
+            height={38}
+            priority
+            style={{ filter: 'var(--mantine-color-scheme) === "dark" ? invert(1) : invert(0)' }}
+          />
+          <Title order={1} ta="center">
+            🚀 damon-stack 管理后台
+          </Title>
+          <Text size="lg" c="dimmed" ta="center">
+            基于 Next.js 15 + Mantine UI + tRPC 构建的现代化管理系统
+          </Text>
+          
+          <Group>
+            <Badge color="blue" variant="light">Next.js 15</Badge>
+            <Badge color="orange" variant="light">Mantine UI</Badge>
+            <Badge color="green" variant="light">tRPC</Badge>
+            <Badge color="purple" variant="light">TypeScript</Badge>
+          </Group>
+        </Stack>
+
+        {/* 欢迎信息卡片 */}
+        <Card title="✨ 系统状态" style={{ width: '100%', maxWidth: 600 }}>
+          <Stack gap="sm">
+            <Text>{welcomeData?.message}</Text>
+            <Text size="sm" c="dimmed">
+              加载时间: {welcomeData?.timestamp}
+            </Text>
+            <Badge color="green" variant="light" style={{ alignSelf: 'flex-start' }}>
+              系统运行正常
+            </Badge>
+          </Stack>
+        </Card>
+
+        {/* 快速开始卡片 */}
+        <Card title="🛠️ 快速开始" style={{ width: '100%', maxWidth: 600 }}>
+          <Stack gap="md">
+            <Text size="sm">
+              1. 编辑{' '}
+              <Text component="code" bg="gray.1" px="xs" style={{ borderRadius: 4 }}>
+                app/page.tsx
+              </Text>{' '}
+              文件来自定义此页面
+            </Text>
+            <Text size="sm">
+              2. 访问 <Anchor href="/ui-test" target="_blank">/ui-test</Anchor> 查看 UI 组件示例
+            </Text>
+            <Text size="sm">
+              3. 保存更改并即时查看效果
+            </Text>
+          </Stack>
+        </Card>
+
+        {/* 操作按钮 */}
+        <Card title="🔗 相关链接" style={{ width: '100%', maxWidth: 600 }}>
+          <Group justify="center" gap="md">
+            <Button
+              component="a"
+              href="https://vercel.com/new"
+              target="_blank"
+              rel="noopener noreferrer"
+              leftSection={
+                <Image
+                  src="/vercel.svg"
+                  alt="Vercel"
+                  width={16}
+                  height={16}
+                  style={{ filter: 'var(--mantine-color-scheme) === "dark" ? invert(1) : invert(0)' }}
+                />
+              }
+            >
+              部署应用
+            </Button>
+            
+            <Button
+              variant="outline"
+              component="a"
+              href="https://nextjs.org/docs"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              查看文档
+            </Button>
+          </Group>
+        </Card>
+
+        {/* 底部链接 */}
+        <Group gap="lg" mt="xl">
+          <Anchor
+            href="https://nextjs.org/learn"
             target="_blank"
             rel="noopener noreferrer"
+            size="sm"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
+            <Group gap="xs">
+              <Image src="/file.svg" alt="Learn" width={16} height={16} />
+              <Text>学习教程</Text>
+            </Group>
+          </Anchor>
+          
+          <Anchor
+            href="https://vercel.com/templates?framework=next.js"
             target="_blank"
             rel="noopener noreferrer"
+            size="sm"
           >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+            <Group gap="xs">
+              <Image src="/window.svg" alt="Examples" width={16} height={16} />
+              <Text>示例模板</Text>
+            </Group>
+          </Anchor>
+          
+          <Anchor
+            href="https://nextjs.org"
+            target="_blank"
+            rel="noopener noreferrer"
+            size="sm"
+          >
+            <Group gap="xs">
+              <Image src="/globe.svg" alt="Next.js" width={16} height={16} />
+              <Text>Next.js 官网 →</Text>
+            </Group>
+          </Anchor>
+        </Group>
+      </Stack>
+    </Container>
   );
 }

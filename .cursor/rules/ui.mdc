@@ -1,0 +1,57 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+{
+  "rules": [
+    {
+      "rule": "角色与职责：扮演一名严格遵守 'Damon-Stack Admin 设计系统与布局规范' 的高级前端工程师。你的核心职责是构建功能，同时保证代码与既定设计系统的高度一致性。",
+      "glob": "apps/admin-dashboard/**/*"
+    },
+    {
+      "rule": "【布局宪法-第一条：强制使用AppShell骨架】所有在 `apps/admin-dashboard/app/**/page.tsx` 中创建的管理页面，其对应的 `layout.tsx` 必须导入并使用位于 `apps/admin-dashboard/components/Layout.tsx` 的共享 `<Layout>` 组件来包裹 `{children}`。严禁在页面中自行实现顶栏或侧边栏。",
+      "glob": "apps/admin-dashboard/app/**/layout.tsx"
+    },
+    {
+      "rule": "【布局宪法-第二条：页面头部规范】每个 `page.tsx` 的内容顶部，必须使用简洁的Dashboard风格布局：`<Group justify=\"space-between\" align=\"center\"><Title order={1}>页面标题</Title><Button variant=\"filled\">主要操作</Button></Group>`。严禁使用复杂的PageHeader组件、面包屑导航或页面描述。",
+      "glob": "apps/admin-dashboard/app/**/page.tsx"
+    },
+    {
+      "rule": "【布局宪法-第三条：内容主体规范】所有核心内容（表格、表单、图表、筛选器）都必须包裹在 `<Paper withBorder>` 组件中。严禁使用 `shadow` 属性，必须使用 `withBorder` 实现轻量边框效果。内边距根据内容重要性使用 `p=\"md\"` 或 `p=\"xl\"`。整个页面内容使用 `<Stack gap=\"xl\">` 布局。",
+      "glob": "apps/admin-dashboard/app/**/page.tsx"
+    },
+    {
+      "rule": "【组件规范-Paper容器】所有Paper组件必须使用现代轻量边框风格：`<Paper withBorder>` 而非阴影风格。严禁使用 `shadow=\"sm\"` 或 `shadow=\"md\"` 等阴影属性。筛选器容器使用 `p=\"md\"`，主要内容容器使用 `p=\"xl\"`。",
+      "glob": "**/*.tsx"
+    },
+    {
+      "rule": "【组件规范-按钮】页面级主操作按钮（通常只有一个）应放在页面标题右侧，使用 `variant='filled'`。表格行内操作按钮和表单按钮，优先使用 `variant='light'` 或 `variant='default'`。危险操作（如删除）按钮必须使用 `color='red'`。所有按钮都应尽可能在 `leftSection` 中包含一个 `@tabler/icons-react` 图标。",
+      "glob": "**/page.tsx"
+    },
+    {
+      "rule": "【组件规范-表格】使用 Mantine `Table` 时，必须包含 `withTableBorder`, `withColumnBorders`, `striped` 属性。'操作'列必须是最后一列，且内部按钮使用 `<Group gap='xs'>` 布局。",
+      "glob": "**/page.tsx"
+    },
+    {
+      "rule": "【组件规范-表单】所有输入控件必须有关联的 `<label>`。表单的提交和取消按钮必须使用 `<Group justify='flex-end'>` 布局，并放置在表单底部。",
+      "glob": "**/UserForm.tsx"
+    },
+    {
+      "rule": "【交互规范-加载状态】当使用 `useQuery` 获取数据时，必须处理 `isLoading` 状态。对于整个页面或大型组件，应使用 `<LoadingOverlay visible={isLoading} />` 覆盖在 `Paper` 或 `Card` 容器上，而不是仅显示文本或一个小的 `Loader`。",
+      "glob": "**/page.tsx"
+    },
+    {
+      "rule": "【交互规范-空状态】当列表查询结果为空数组时 (`data?.length === 0`)，必须渲染一个"空状态"组件。这个组件应居中显示，包含一个图标、提示文本和引导操作的按钮。",
+      "glob": "**/page.tsx"
+    },
+    {
+      "rule": "【代码风格-间距与颜色】所有间距（padding, margin, gap）必须使用 `theme.spacing` 的预设值（如 'xs', 'sm', 'md', 'lg', 'xl'）。所有颜色必须使用 `theme.colors` 或 `theme.primaryColor` 的预设值。严禁在代码中使用硬编码的像素值（如 `16px`）或颜色值（如 `#FFFFFF`）。",
+      "glob": "**/*.tsx"
+    },
+    {
+      "rule": "【模块化原则】创建新的可复用UI组件时，应优先考虑将其放置在 `packages/ui` 中，而不是应用的本地 `components` 目录。核心业务逻辑（API、非UI的Hooks）应封装在对应的 `features/*` 模块中。",
+      "glob": "**/*.tsx"
+    }
+  ]
+}
