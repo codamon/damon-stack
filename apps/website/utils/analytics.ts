@@ -1,4 +1,4 @@
-import { Metric } from 'web-vitals';
+import { type Metric } from 'web-vitals';
 
 /**
  * Web Vitals性能指标类型

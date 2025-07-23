@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { getCLS, getFID, getFCP, getLCP, getTTFB, Metric } from 'web-vitals';
+import { onCLS, onFID, onFCP, onLCP, onTTFB, onINP, type Metric } from 'web-vitals';
 import { sendToAnalytics, initPerformanceMonitoring } from '../utils/analytics';
 
 /**
@@ -14,18 +14,14 @@ export function WebVitals() {
     initPerformanceMonitoring();
 
     // 收集Core Web Vitals指标
-    getCLS(sendToAnalytics);
-    getFID(sendToAnalytics);
-    getFCP(sendToAnalytics);
-    getLCP(sendToAnalytics);
-    getTTFB(sendToAnalytics);
+    onCLS(sendToAnalytics);
+    onFID(sendToAnalytics);
+    onFCP(sendToAnalytics);
+    onLCP(sendToAnalytics);
+    onTTFB(sendToAnalytics);
 
-    // 如果支持INP（Interaction to Next Paint），也收集
-    if ('PerformanceObserver' in window && PerformanceObserver.supportedEntryTypes.includes('event')) {
-      import('web-vitals').then(({ onINP }) => {
-        onINP(sendToAnalytics);
-      });
-    }
+    // 收集INP（Interaction to Next Paint）指标
+    onINP(sendToAnalytics);
   }, []);
 
   // 这个组件不渲染任何UI
