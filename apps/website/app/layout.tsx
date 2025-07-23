@@ -73,13 +73,32 @@ export default function RootLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify(seoUtils.generateJsonLd.website()),
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'WebSite',
+              name: 'Damon Stack',
+              url: 'https://damon-stack.com',
+              description: '基于 Next.js 15 + Mantine 8 + tRPC 的现代化全栈开发平台，提供完整的企业级解决方案',
+              potentialAction: {
+                '@type': 'SearchAction',
+                target: 'https://damon-stack.com/search?q={search_term_string}',
+                'query-input': 'required name=search_term_string',
+              },
+            }),
           }}
         />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify(seoUtils.generateJsonLd.organization()),
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'Organization',
+              name: 'Damon Stack',
+              url: 'https://damon-stack.com',
+              logo: 'https://damon-stack.com/logo.png',
+              description: '基于 Next.js 15 + Mantine 8 + tRPC 的现代化全栈开发平台，提供完整的企业级解决方案',
+              sameAs: [],
+            }),
           }}
         />
       </head>
