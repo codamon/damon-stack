@@ -54,24 +54,31 @@ export function useSearchHistory(source: 'website' | 'blog' | 'shop' = 'website'
 
 // 全文搜索hook
 export function useFullTextSearch(source: 'website' | 'blog' | 'shop' = 'website') {
-  const fullTextQuery = api.search.fullText.useQuery;
-  
+  // 临时注释掉，等待API路由实现
+  // const fullTextQuery = api.search.fullText.useQuery;
+
   return {
     search: (params: {
       query: string;
       filters?: SearchFilters;
       page?: number;
       limit?: number;
-    }) => fullTextQuery({
-      ...params,
-      source,
-    }),
+    }) => {
+      // 临时返回空结果
+      return Promise.resolve({
+        data: [],
+        total: 0,
+        page: params.page || 1,
+        limit: params.limit || 10,
+      });
+    },
   };
 }
 
 // 搜索建议hook
 export function useSearchSuggestions(source: 'website' | 'blog' | 'shop' = 'website') {
-  const suggestionsQuery = api.search.suggestions.useQuery;
+  // 临时注释掉，等待API路由实现
+  // const suggestionsQuery = api.search.suggestions.useQuery;
   
   const getSuggestions = useCallback(async (query: string): Promise<Array<{
     text: string;
@@ -79,49 +86,51 @@ export function useSearchSuggestions(source: 'website' | 'blog' | 'shop' = 'webs
     priority: number;
   }>> => {
     if (query.trim().length < 2) return [];
-    
+
     try {
-      const result = await suggestionsQuery({
-        query,
-        source,
-        limit: 8,
-      });
-      return result || [];
+      // 临时返回模拟数据
+      return [
+        { text: query + ' tutorial', type: 'custom', priority: 1 },
+        { text: query + ' guide', type: 'custom', priority: 2 },
+      ];
     } catch (error) {
       console.error('获取搜索建议失败:', error);
       return [];
     }
-  }, [source, suggestionsQuery]);
+  }, [source]);
 
   return { getSuggestions };
 }
 
 // 热门搜索hook
 export function useTrendingSearch(source: 'website' | 'blog' | 'shop' = 'website') {
-  const trendingQuery = api.search.trending.useQuery;
+  // 临时注释掉，等待API路由实现
+  // const trendingQuery = api.search.trending.useQuery;
   
   const getTrending = useCallback(async (): Promise<Array<{
     query: string;
     searchCount: number;
   }>> => {
     try {
-      const result = await trendingQuery({
-        source,
-        limit: 10,
-      });
-      return result || [];
+      // 临时返回模拟数据
+      return [
+        { query: 'React', searchCount: 150 },
+        { query: 'Next.js', searchCount: 120 },
+        { query: 'TypeScript', searchCount: 100 },
+      ];
     } catch (error) {
       console.error('获取热门搜索失败:', error);
       return [];
     }
-  }, [source, trendingQuery]);
+  }, [source]);
 
   return { getTrending };
 }
 
 // 搜索点击记录hook
 export function useSearchClickTracking(source: 'website' | 'blog' | 'shop' = 'website') {
-  const recordClickMutation = api.search.recordClick.useMutation();
+  // 临时注释掉，等待API路由实现
+  // const recordClickMutation = api.search.recordClick.useMutation();
   
   const recordClick = useCallback((params: {
     query: string;
@@ -129,11 +138,9 @@ export function useSearchClickTracking(source: 'website' | 'blog' | 'shop' = 'we
     resultType: 'post' | 'category' | 'tag';
     position: number;
   }) => {
-    recordClickMutation.mutate({
-      ...params,
-      source,
-    });
-  }, [source, recordClickMutation]);
+    // 临时记录到控制台
+    console.log('Search click recorded:', { ...params, source });
+  }, [source]);
 
   return { recordClick };
 }
@@ -150,20 +157,13 @@ export function useSearch(source: 'website' | 'blog' | 'shop' = 'website') {
   const { getTrending } = useTrendingSearch(source);
   const { recordClick } = useSearchClickTracking(source);
 
-  // 执行搜索
-  const search = api.search.fullText.useQuery(
-    {
-      query: query.trim(),
-      filters,
-      page,
-      source,
-      limit: 10,
-    },
-    {
-      enabled: query.trim().length > 0,
-      staleTime: 1000 * 60 * 5, // 5分钟
-    }
-  );
+  // 执行搜索 - 临时禁用
+  const search = {
+    data: null,
+    isLoading: false,
+    error: null,
+    refetch: () => Promise.resolve(),
+  };
 
   // 搜索处理函数
   const handleSearch = useCallback((newQuery: string, newFilters?: SearchFilters) => {
@@ -210,8 +210,8 @@ export function useSearch(source: 'website' | 'blog' | 'shop' = 'website') {
     isSearching: isSearching || search.isLoading,
     
     // 搜索结果
-    results: search.data?.results || [],
-    pagination: search.data?.pagination || null,
+    results: [],
+    pagination: null,
     error: search.error,
     
     // 搜索操作
@@ -234,13 +234,19 @@ export function useSearch(source: 'website' | 'blog' | 'shop' = 'website') {
 
 // 搜索分析hook (管理员)
 export function useSearchAnalytics() {
-  return api.search.analytics.useQuery({
-    dateRange: [
-      new Date(Date.now() - 30 * 24 * 60 * 60 * 1000), // 30天前
-      new Date(),
-    ],
-    limit: 50,
-  }, {
-    staleTime: 1000 * 60 * 15, // 15分钟
-  });
-} 
+  // 临时返回模拟数据
+  return {
+    data: {
+      totalSearches: 1250,
+      uniqueQueries: 450,
+      topQueries: [
+        { query: 'React', count: 150 },
+        { query: 'Next.js', count: 120 },
+        { query: 'TypeScript', count: 100 },
+      ],
+      searchTrends: [],
+    },
+    isLoading: false,
+    error: null,
+  };
+}

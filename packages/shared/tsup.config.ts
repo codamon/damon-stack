@@ -8,8 +8,8 @@ export default defineConfig({
   sourcemap: true,
   clean: true,
   external: [
-    "react", 
-    "react-dom", 
+    "react",
+    "react-dom",
     "@tanstack/react-query",
     "@trpc/client",
     "@trpc/react-query",
@@ -17,10 +17,12 @@ export default defineConfig({
     "superjson",
     "zod"
   ],
-  banner: {
-    js: "'use client';",
+  esbuildOptions(options) {
+    options.banner = {
+      js: '"use client";',
+    };
   },
   treeshake: true,
   minify: false,
   target: "es2022"
-}); 
+});
