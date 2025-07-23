@@ -1,9 +1,11 @@
 'use client';
 
+import React from 'react';
+import { AuthForm } from '@/components/AuthForm';
+import { api } from '@/trpc/react';
 import { signIn } from 'next-auth/react';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { api } from '../../../trpc/react';
 import { 
   Paper, 
   Title, 

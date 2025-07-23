@@ -11,11 +11,8 @@ import { createTRPCReact } from '@trpc/react-query';
 import { useState } from 'react';
 import superjson from 'superjson';
 
-// 为了演示，这里使用简单的AppRouter类型
-// 在实际项目中，你应该从admin-dashboard的server/api/root导入
-type AppRouter = {
-  // 这里可以添加具体的路由类型定义
-};
+// 引用admin-dashboard的AppRouter类型
+import type { AppRouter } from '../../admin-dashboard/server/api/root';
 
 /**
  * 创建 tRPC React 客户端实例
@@ -94,8 +91,9 @@ export function TRPCReactProvider(props: {
            */
           async headers() {
             return {
-              // 可以在这里添加认证头等
-              // authorization: getAuthToken(),
+              // 对于博客公开内容，暂时不需要认证
+              // 可以在这里添加API密钥等
+              'x-api-client': 'blog-frontend',
             };
           },
         }),

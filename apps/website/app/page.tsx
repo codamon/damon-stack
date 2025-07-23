@@ -35,6 +35,10 @@ import {
   IconBrandGithub,
   IconBrandTwitter,
   IconBrandLinkedin,
+  IconLogin,
+  IconUserPlus,
+  IconStar,
+  IconCheck,
 } from '@tabler/icons-react';
 
 export default function HomePage() {
@@ -86,12 +90,12 @@ export default function HomePage() {
                 radius="md"
                 color="white"
                 variant="filled"
-                leftSection={<IconRocket size={24} />}
+                leftSection={<IconUserPlus size={24} />}
                 component="a"
-                href="/products"
+                href="/auth/signup"
                 style={{ color: '#667eea' }}
               >
-                了解产品
+                免费注册
               </Button>
               
               <Button
@@ -99,10 +103,24 @@ export default function HomePage() {
                 radius="md"
                 variant="outline"
                 color="white"
+                leftSection={<IconLogin size={20} />}
                 component="a"
-                href="/contact"
+                href="/auth/signin"
               >
-                联系我们
+                立即登录
+              </Button>
+              
+              <Button
+                size="xl"
+                radius="md"
+                variant="subtle"
+                color="white"
+                leftSection={<IconRocket size={20} />}
+                component="a"
+                href="/products"
+                style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)' }}
+              >
+                了解产品
               </Button>
             </Group>
           </Stack>
@@ -299,6 +317,96 @@ export default function HomePage() {
         </Stack>
       </Container>
 
+      {/* 用户注册推广区域 */}
+      <Box style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white' }} py={80}>
+        <Container size="xl">
+          <Stack gap="xl" align="center" ta="center">
+            <Stack gap="md" align="center">
+              <Badge
+                size="xl"
+                variant="light"
+                color="white"
+                style={{ backgroundColor: 'rgba(255, 255, 255, 0.2)' }}
+              >
+                🎉 免费体验
+              </Badge>
+              
+              <Title order={2} size="2.5rem" fw={700} c="white">
+                立即注册，开启您的开发之旅
+              </Title>
+              
+              <Text size="lg" c="white" maw={600} style={{ opacity: 0.9 }}>
+                注册免费账户，获取完整的开发工具和技术支持，
+                与数千名开发者一起构建下一代应用
+              </Text>
+            </Stack>
+
+            <SimpleGrid cols={{ base: 1, sm: 3 }} spacing="xl" w="100%" maw={600}>
+              <Stack align="center" gap="sm">
+                <ThemeIcon size={60} color="white" variant="light">
+                  <IconCheck size={32} />
+                </ThemeIcon>
+                <Text fw={600} c="white">完全免费</Text>
+                <Text size="sm" c="white" style={{ opacity: 0.8 }}>
+                  无隐藏费用
+                </Text>
+              </Stack>
+              
+              <Stack align="center" gap="sm">
+                <ThemeIcon size={60} color="white" variant="light">
+                  <IconStar size={32} />
+                </ThemeIcon>
+                <Text fw={600} c="white">专业工具</Text>
+                <Text size="sm" c="white" style={{ opacity: 0.8 }}>
+                  企业级功能
+                </Text>
+              </Stack>
+              
+              <Stack align="center" gap="sm">
+                <ThemeIcon size={60} color="white" variant="light">
+                  <IconUsers size={32} />
+                </ThemeIcon>
+                <Text fw={600} c="white">技术支持</Text>
+                <Text size="sm" c="white" style={{ opacity: 0.8 }}>
+                  专家团队服务
+                </Text>
+              </Stack>
+            </SimpleGrid>
+
+            <Group gap="lg" mt="xl">
+              <Button
+                size="xl"
+                radius="md"
+                color="white"
+                variant="filled"
+                leftSection={<IconUserPlus size={24} />}
+                component="a"
+                href="/auth/signup"
+                style={{ color: '#667eea' }}
+              >
+                免费注册账户
+              </Button>
+              
+              <Button
+                size="xl"
+                radius="md"
+                variant="outline"
+                color="white"
+                leftSection={<IconLogin size={20} />}
+                component="a"
+                href="/auth/signin"
+              >
+                已有账户？登录
+              </Button>
+            </Group>
+            
+            <Text size="sm" c="white" style={{ opacity: 0.7 }}>
+              注册即表示您同意我们的服务条款和隐私政策
+            </Text>
+          </Stack>
+        </Container>
+      </Box>
+
       {/* 最新博客区域 */}
       <Box bg="gray.0" py={100}>
         <Container size="xl">
@@ -424,7 +532,16 @@ export default function HomePage() {
           <Group gap="lg">
             <Button
               size="xl"
-              leftSection={<IconUsers size={24} />}
+              leftSection={<IconUserPlus size={24} />}
+              component="a"
+              href="/auth/signup"
+            >
+              免费注册体验
+            </Button>
+            <Button
+              size="xl"
+              variant="outline"
+              leftSection={<IconUsers size={20} />}
               component="a"
               href="/contact"
             >
@@ -432,11 +549,12 @@ export default function HomePage() {
             </Button>
             <Button
               size="xl"
-              variant="outline"
+              variant="subtle"
+              leftSection={<IconLogin size={20} />}
               component="a"
-              href="/about"
+              href="/auth/signin"
             >
-              了解更多信息
+              用户登录
             </Button>
           </Group>
 

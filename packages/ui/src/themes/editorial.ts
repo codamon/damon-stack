@@ -148,7 +148,7 @@ export const editorialThemeOverride: MantineThemeOverride = {
           transition: 'all 200ms ease',
           
           // 主要按钮：突出但不抢夺注意力
-          '&[data-variant="filled"]': {
+          '&[dataVariant="filled"]': {
             backgroundColor: editorialColors.secondary,
             border: `1px solid ${editorialColors.secondary}`,
             '&:hover': {
@@ -158,7 +158,7 @@ export const editorialThemeOverride: MantineThemeOverride = {
           },
           
           // 次要按钮：融入文本环境
-          '&[data-variant="outline"]': {
+          '&[dataVariant="outline"]': {
             border: `1px solid ${editorialColors.borderSecondary}`,
             color: editorialColors.textSecondary,
             '&:hover': {
@@ -168,7 +168,7 @@ export const editorialThemeOverride: MantineThemeOverride = {
           },
           
           // 链接按钮：类似文本链接
-          '&[data-variant="subtle"]': {
+          '&[dataVariant="subtle"]': {
             color: editorialColors.textLink,
             '&:hover': {
               backgroundColor: editorialColors.backgroundSecondary,

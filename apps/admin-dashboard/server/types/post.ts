@@ -4,7 +4,7 @@ export type PostStatus = 'DRAFT' | 'PUBLISHED' | 'ARCHIVED' | 'SCHEDULED';
 // User 简化类型（用于关联）
 export interface User {
   id: string;
-  name?: string;
+  name: string | null;
   email: string;
 }
 
@@ -13,8 +13,8 @@ export interface Category {
   id: string;
   name: string;
   slug: string;
-  description?: string;
-  parentId?: string;
+  description: string | null;
+  parentId: string | null;
   order: number;
   createdAt: Date;
   updatedAt: Date;
@@ -25,8 +25,8 @@ export interface Tag {
   id: string;
   name: string;
   slug: string;
-  description?: string;
-  color?: string;
+  description: string | null;
+  color: string | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -37,20 +37,22 @@ export interface Post {
   title: string;
   slug: string;
   content: string;
-  excerpt?: string;
-  coverImage?: string;
+  excerpt: string | null;
+  coverImage: string | null;
   status: PostStatus;
-  metaTitle?: string;
-  metaDescription?: string;
-  keywords?: string;
+  metaTitle: string | null;
+  metaDescription: string | null;
+  keywords: string | null;
+  readingTime: number | null;
+  ogImage: string | null;
   order: number;
   featured: boolean;
   viewCount: number;
   likeCount: number;
-  publishedAt?: Date;
-  scheduledAt?: Date;
+  publishedAt: Date | null;
+  scheduledAt: Date | null;
   authorId: string;
-  categoryId?: string;
+  categoryId: string | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -58,7 +60,7 @@ export interface Post {
 // 带关联数据的 Post 类型
 export interface PostWithRelations extends Omit<Post, 'authorId' | 'categoryId'> {
   author: User;
-  category?: Category;
+  category: Category | null;
   tags: Tag[];
 }
 
@@ -72,6 +74,8 @@ export interface CreatePostInput {
   metaTitle?: string;
   metaDescription?: string;
   keywords?: string;
+  readingTime?: number;
+  ogImage?: string;
   featured?: boolean;
   publishedAt?: Date;
   scheduledAt?: Date;
@@ -90,6 +94,8 @@ export interface UpdatePostInput {
   metaTitle?: string;
   metaDescription?: string;
   keywords?: string;
+  readingTime?: number;
+  ogImage?: string;
   featured?: boolean;
   publishedAt?: Date;
   scheduledAt?: Date;

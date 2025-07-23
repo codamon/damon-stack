@@ -3,15 +3,15 @@
 import { MantineProvider } from '@mantine/core';
 import { Notifications } from '@mantine/notifications';
 import { editorialTheme } from '@damon-stack/ui';
-import { TRPCProvider } from '../providers/TRPCProvider';
+import { TRPCReactProvider } from '../trpc/react';
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <TRPCProvider>
+    <TRPCReactProvider>
       <MantineProvider theme={editorialTheme}>
         <Notifications />
         {children}
       </MantineProvider>
-    </TRPCProvider>
+    </TRPCReactProvider>
   );
 } 

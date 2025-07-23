@@ -8,6 +8,10 @@ import { dashboardRouter } from './routers/dashboard';
 import { categoryRouter } from './routers/category';
 import { postRouter } from './routers/post';
 import { authRouter } from './routers/auth';
+import { customerRouter } from './routers/customer';
+import { searchRouter } from './routers/search';
+import { siteConfigRouter } from './routers/siteconfig';
+import { navigationRouter } from './routers/navigation';
 import { createUserRouter } from '@damon-stack/feature-user-management/api';
 
 // 创建用户管理路由实例（仅管理员可访问）
@@ -27,6 +31,20 @@ export const appRouter = createTRPCRouter({
    * 访问方式: trpc.auth.register, etc.
    */
   auth: authRouter,
+
+  /**
+   * 前端用户相关路由 (步骤10新增)
+   * 命名空间: customer
+   * 访问方式: trpc.customer.register, trpc.customer.login, trpc.customer.me, etc.
+   */
+  customer: customerRouter,
+
+  /**
+   * 搜索和筛选相关路由 (步骤11新增)
+   * 命名空间: search
+   * 访问方式: trpc.search.fullText, trpc.search.suggestions, trpc.search.trending, etc.
+   */
+  search: searchRouter,
 
   /**
    * Dashboard 相关路由
@@ -55,6 +73,20 @@ export const appRouter = createTRPCRouter({
    * 访问方式: trpc.category.list, trpc.category.create, trpc.category.update, etc.
    */
   category: categoryRouter,
+
+  /**
+   * 网站配置相关路由 (步骤9新增)
+   * 命名空间: siteConfig
+   * 访问方式: trpc.siteConfig.get, trpc.siteConfig.upsert, trpc.siteConfig.getPublic, etc.
+   */
+  siteConfig: siteConfigRouter,
+
+  /**
+   * 导航菜单相关路由 (步骤9新增)
+   * 命名空间: navigation
+   * 访问方式: trpc.navigation.list, trpc.navigation.create, trpc.navigation.getPublic, etc.
+   */
+  navigation: navigationRouter,
 });
 
 /**

@@ -4,5 +4,7 @@
  */
 
 export { Layout } from './Layout';
+export { StatCard } from './StatCard';
 export { UserGrowthChart } from './charts/UserGrowthChart';
+export type { StatCardProps, StatCardDiff } from './StatCard';
 export type { UserGrowthChartData, UserGrowthChartProps } from './charts/UserGrowthChart'; 

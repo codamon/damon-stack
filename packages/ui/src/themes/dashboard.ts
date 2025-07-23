@@ -161,7 +161,7 @@ export const dashboardThemeOverride: MantineThemeOverride = {
           transition: 'all 150ms ease',
           
           // 主要按钮
-          '&[data-variant="filled"]': {
+          '&[dataVariant="filled"]': {
             backgroundColor: dashboardColors.primary,
             border: `1px solid ${dashboardColors.primary}`,
             '&:hover': {
@@ -171,7 +171,7 @@ export const dashboardThemeOverride: MantineThemeOverride = {
           },
           
           // 次要按钮
-          '&[data-variant="outline"]': {
+          '&[dataVariant="outline"]': {
             border: `1px solid ${dashboardColors.borderSecondary}`,
             color: dashboardColors.textSecondary,
             '&:hover': {
@@ -181,7 +181,7 @@ export const dashboardThemeOverride: MantineThemeOverride = {
           },
           
           // 轻量按钮
-          '&[data-variant="light"]': {
+          '&[dataVariant="light"]': {
             backgroundColor: dashboardColors.backgroundTertiary,
             color: dashboardColors.textPrimary,
             '&:hover': {
@@ -190,7 +190,7 @@ export const dashboardThemeOverride: MantineThemeOverride = {
           },
           
           // 危险按钮
-          '&[data-variant="danger"]': {
+          '&[dataVariant="danger"]': {
             backgroundColor: dashboardColors.danger,
             color: 'white',
             '&:hover': {
@@ -302,7 +302,7 @@ export const dashboardThemeOverride: MantineThemeOverride = {
             backgroundColor: dashboardColors.hover,
           },
           
-          '&[data-active="true"]': {
+          '&[dataActive="true"]': {
             backgroundColor: dashboardColors.selected,
             color: dashboardColors.primary,
             fontWeight: 600,
@@ -322,7 +322,7 @@ export const dashboardThemeOverride: MantineThemeOverride = {
           fontSize: rem(13),
           fontWeight: 500,
           padding: `${rem(6)} ${rem(12)}`,
-          '&[data-active="true"]': {
+          '&[dataActive="true"]': {
             borderColor: dashboardColors.primary,
             color: dashboardColors.primary,
           },
@@ -343,7 +343,7 @@ export const dashboardThemeOverride: MantineThemeOverride = {
           textTransform: 'uppercase',
           letterSpacing: '0.5px',
           
-          '&[data-variant="light"]': {
+          '&[dataVariant="light"]': {
             '&[data-color="green"]': {
               backgroundColor: '#dcfce7', // green-100
               color: '#166534', // green-800
@@ -367,7 +367,7 @@ export const dashboardThemeOverride: MantineThemeOverride = {
         root: {
           color: dashboardColors.textPrimary,
           
-          '&[data-order="1"]': {
+          '&[dataOrder="1"]': {
             fontSize: rem(20),
             fontWeight: 700,
           },
@@ -381,7 +381,7 @@ export const dashboardThemeOverride: MantineThemeOverride = {
           color: dashboardColors.textSecondary,
           fontSize: rem(13),
           
-          '&[data-variant="dimmed"]': {
+          '&[dataVariant="dimmed"]': {
             color: dashboardColors.textMuted,
             fontSize: rem(12),
           },
@@ -398,17 +398,17 @@ export const dashboardThemeOverride: MantineThemeOverride = {
         root: {
           fontSize: rem(13),
           
-          '&[data-variant="success"]': {
+          '&[dataVariant="success"]': {
             backgroundColor: '#dcfce7', // green-100
             borderColor: dashboardColors.success,
           },
           
-          '&[data-variant="error"]': {
+          '&[dataVariant="error"]': {
             backgroundColor: '#fee2e2', // red-100
             borderColor: dashboardColors.danger,
           },
           
-          '&[data-variant="warning"]': {
+          '&[dataVariant="warning"]': {
             backgroundColor: '#fef3c7', // amber-100
             borderColor: dashboardColors.warning,
           },

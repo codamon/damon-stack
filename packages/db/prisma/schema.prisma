@@ -127,6 +127,10 @@ model Post {
   metaDescription String? // SEO 描述
   keywords        String? // 关键词，逗号分隔
   
+  // 前端展示字段 (步骤9新增)
+  readingTime     Int?    // 预计阅读时间（分钟）
+  ogImage         String? // 社交媒体分享图片 URL
+  
   // 排序和组织
   order       Int      @default(0) // 排序权重
   featured    Boolean  @default(false) // 是否精选
@@ -197,4 +201,268 @@ model PostTag {
   // 确保同一篇文章不能重复添加同一个标签
   @@unique([postId, tagId])
   @@map("cms_post_tags")
+}
+
+// 网站配置模型 (步骤9新增)
+model SiteConfig {
+  id          String   @id @default(cuid())
+  
+  // 基础信息
+  siteName    String   // 网站名称
+  siteUrl     String   // 网站URL
+  description String?  @db.Text // 网站描述
+  logo        String?  // Logo URL
+  favicon     String?  // Favicon URL
+  
+  // SEO设置
+  defaultTitle       String?  @db.Text // 默认页面标题
+  defaultDescription String?  @db.Text // 默认页面描述
+  
+  // 社交媒体
+  facebook    String?  // Facebook 链接
+  twitter     String?  // Twitter 链接
+  linkedin    String?  // LinkedIn 链接
+  instagram   String?  // Instagram 链接
+  youtube     String?  // YouTube 链接
+  
+  // 联系信息
+  email       String?  // 联系邮箱
+  phone       String?  // 联系电话
+  address     String?  @db.Text // 联系地址
+  
+  // 首页配置
+  heroTitle        String?  @db.Text // 首页主标题
+  heroSubtitle     String?  @db.Text // 首页副标题
+  heroImage        String?  // 首页背景图
+  heroButtonText   String?  // 首页按钮文字
+  heroButtonLink   String?  // 首页按钮链接
+  
+  // 功能开关
+  enableComments   Boolean  @default(true)  // 是否启用评论
+  enableNewsletter Boolean  @default(false) // 是否启用邮件订阅
+  enableSearch     Boolean  @default(true)  // 是否启用搜索
+  
+  // 分析和统计
+  googleAnalyticsId String? // Google Analytics ID
+  baiduAnalyticsId  String? // 百度统计 ID
+  
+  // 时间戳
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("site_config")
+}
+
+// 导航菜单模型 (步骤9新增)
+model NavigationMenu {
+  id          String   @id @default(cuid())
+  
+  // 基础信息
+  name        String   // 菜单项名称
+  url         String   // 链接地址
+  icon        String?  // 图标（可选）
+  description String?  // 描述（可选）
+  
+  // 层级关系
+  parentId    String?  // 父菜单ID
+  order       Int      @default(0) // 排序顺序
+  
+  // 显示设置
+  isExternal  Boolean  @default(false) // 是否外部链接
+  isVisible   Boolean  @default(true)  // 是否显示
+  openInNewTab Boolean @default(false) // 是否新标签页打开
+  
+  // 权限控制
+  requireAuth Boolean  @default(false) // 是否需要登录
+  allowedRoles String? // 允许访问的角色（逗号分隔）
+  
+  // 关联关系
+  parent   NavigationMenu?  @relation("MenuTree", fields: [parentId], references: [id], onDelete: Cascade)
+  children NavigationMenu[] @relation("MenuTree")
+  
+  // 时间戳
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([parentId])
+  @@index([order])
+  @@map("navigation_menus")
+}
+
+// 前端用户系统模型 (步骤10新增)
+
+// 前端用户状态枚举
+enum CustomerStatus {
+  ACTIVE    // 活跃
+  INACTIVE  // 未激活
+  BANNED    // 禁用
+}
+
+// 前端用户模型 (区别于管理员User)
+model Customer {
+  id          String   @id @default(cuid())
+  
+  // 基础信息
+  email       String   @unique
+  name        String?
+  avatar      String?
+  phone       String?
+  birthday    DateTime?
+  gender      String?  // male, female, other
+  
+  // 认证信息
+  hashedPassword String?  // 密码哈希
+  emailVerified  DateTime? // 邮箱验证时间
+  
+  // 状态管理
+  status      CustomerStatus @default(ACTIVE)
+  
+  // 偏好设置
+  newsletter  Boolean @default(false) // 是否订阅邮件
+  language    String @default("zh-CN") // 语言偏好
+  timezone    String @default("Asia/Shanghai") // 时区
+  theme       String @default("light") // 主题偏好
+  
+  // 统计信息
+  loginCount  Int @default(0) // 登录次数
+  lastLoginAt DateTime? // 最后登录时间
+  lastLoginIp String? // 最后登录IP
+  
+  // 社交账号绑定
+  accounts CustomerAccount[]
+  sessions CustomerSession[]
+  
+  // 业务关联 (后续扩展)
+  // orders      Order[]      // 订单
+  // reviews     Review[]     // 评论
+  // favorites   Favorite[]   // 收藏
+  
+  // 时间戳
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([email])
+  @@index([status])
+  @@map("customers")
+}
+
+// 前端用户账号关联表 (社交登录)
+model CustomerAccount {
+  id                String  @id @default(cuid())
+  customerId        String
+  type              String  // oauth, email, etc.
+  provider          String  // google, github, wechat, etc.
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("customer_accounts")
+}
+
+// 前端用户会话表
+model CustomerSession {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  customerId   String
+  expires      DateTime
+  ipAddress    String?  // 会话IP地址
+  userAgent    String?  @db.Text // 用户代理
+  
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@map("customer_sessions")
+}
+
+// 前端用户验证令牌表
+model CustomerVerificationToken {
+  id         String   @id @default(cuid())
+  customerId String?  // 可选，用于密码重置等
+  identifier String   // 邮箱或手机号
+  token      String   @unique
+  type       String   // email_verification, password_reset, phone_verification
+  expires    DateTime
+  used       Boolean  @default(false) // 是否已使用
+  
+  createdAt  DateTime @default(now())
+
+  @@unique([identifier, token, type])
+  @@map("customer_verification_tokens")
+}
+
+// 用户行为跟踪表 (后续分析用)
+model CustomerActivity {
+  id         String   @id @default(cuid())
+  customerId String?  // 可选，支持匿名用户
+  sessionId  String?  // 会话ID
+  
+  // 行为信息
+  action     String   // 行为类型: login, logout, view_page, etc.
+  page       String?  // 页面路径
+  details    Json?    // 详细信息 JSON
+  
+  // 环境信息
+  ipAddress  String?
+  userAgent  String?  @db.Text
+  referer    String?  @db.Text
+  
+  createdAt  DateTime @default(now())
+  
+  @@index([customerId])
+  @@index([action])
+  @@index([createdAt])
+  @@map("customer_activities")
+}
+
+// 在现有的模型后添加搜索相关模型
+
+// 搜索记录模型
+model SearchLog {
+  id          String   @id @default(cuid())
+  query       String   // 搜索词
+  resultsCount Int     // 结果数量
+  userId      String?  // 用户ID (如果已登录)
+  sessionId   String   // 会话ID
+  ip          String?  // IP地址
+  userAgent   String?  // 用户代理
+  source      String   @default("website") // 搜索来源: website, blog, shop
+  filters     Json?    // 筛选条件
+  clickedResults Json? // 点击的结果
+  createdAt   DateTime @default(now())
+
+  @@index([query])
+  @@index([createdAt])
+  @@index([source])
+}
+
+// 热门搜索词
+model TrendingSearch {
+  id          String   @id @default(cuid())
+  query       String   @unique
+  searchCount Int      @default(1)
+  source      String   @default("website")
+  lastSearched DateTime @default(now())
+  
+  @@index([searchCount(sort: Desc)])
+  @@index([source])
+}
+
+// 搜索建议
+model SearchSuggestion {
+  id          String   @id @default(cuid())
+  query       String   @unique
+  suggestion  String
+  priority    Int      @default(0)
+  source      String   @default("website")
+  isActive    Boolean  @default(true)
+  
+  @@index([query])
+  @@index([priority(sort: Desc)])
 }

@@ -1,6 +1,7 @@
 import { z } from "zod";
-import { createTRPCRouter, adminProcedure } from "../trpc";
+import { createTRPCRouter, adminProcedure, publicProcedure } from "../trpc";
 import { db as prisma } from "@damon-stack/db";
+import { TRPCError } from '@trpc/server';
 
 // Category 验证 schema
 const createCategorySchema = z.object({
@@ -373,5 +374,72 @@ export const categoryRouter = createTRPCRouter({
       await Promise.all(updatePromises);
 
       return { success: true };
+    }),
+
+  // ============================================
+  // 公共 API - 博客前端专用（无需认证）
+  // ============================================
+
+  // 获取所有分类（公开访问）
+  getAll: publicProcedure
+    .query(async ({ ctx }) => {
+      const categories = await ctx.db.category.findMany({
+        orderBy: [
+          { order: 'asc' },
+          { name: 'asc' }
+        ],
+        include: {
+          _count: {
+            select: {
+              posts: {
+                where: {
+                  status: 'PUBLISHED',
+                  publishedAt: { lte: new Date() }
+                }
+              }
+            }
+          }
+        }
+      });
+
+      return categories.map(category => ({
+        ...category,
+        postCount: category._count.posts
+      }));
+    }),
+
+  // 根据slug获取分类（公开访问）
+  getBySlug: publicProcedure
+    .input(z.object({
+      slug: z.string(),
+    }))
+    .query(async ({ input, ctx }) => {
+      const category = await ctx.db.category.findUnique({
+        where: { slug: input.slug },
+        include: {
+          _count: {
+            select: {
+              posts: {
+                where: {
+                  status: 'PUBLISHED',
+                  publishedAt: { lte: new Date() }
+                }
+              }
+            }
+          }
+        }
+      });
+
+      if (!category) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: '分类不存在',
+        });
+      }
+
+      return {
+        ...category,
+        postCount: category._count.posts
+      };
     }),
 }); 

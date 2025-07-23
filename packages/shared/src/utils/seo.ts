@@ -1,6 +1,50 @@
 'use client';
 
 import type { SEOData, Post, Category } from '../api/types';
+// 独立的Metadata类型定义，不依赖Next.js
+export interface MetadataBase {
+  title?: string;
+  description?: string;
+  keywords?: string;
+  authors?: Array<{ name: string }>;
+  openGraph?: {
+    type?: 'website' | 'article';
+    title?: string;
+    description?: string;
+    url?: string;
+    siteName?: string;
+    images?: Array<{
+      url: string;
+      width?: number;
+      height?: number;
+      alt?: string;
+    }>;
+    publishedTime?: string;
+    modifiedTime?: string;
+    authors?: string[];
+    section?: string;
+    tags?: string[];
+    locale?: string;
+  };
+  twitter?: {
+    card?: 'summary_large_image' | 'summary';
+    title?: string;
+    description?: string;
+    images?: string[];
+    creator?: string;
+  };
+  alternates?: {
+    canonical?: string;
+  };
+  robots?: {
+    index?: boolean;
+    follow?: boolean;
+    googleBot?: {
+      index?: boolean;
+      follow?: boolean;
+    };
+  };
+}
 
 /**
  * SEO工具函数集合
@@ -235,45 +279,348 @@ export const seoUtils = {
   }),
 
   /**
+   * 生成文章页面的完整metadata
+   */
+  generatePostMetadata: (post: PostSEOData): MetadataBase => {
+    const title = post.seoTitle || post.title;
+    const description = post.seoDescription || post.excerpt || 
+      seoUtils.extractExcerpt(post.content);
+    const image = post.ogImage || post.featuredImage || SEO_DEFAULTS.defaultImage;
+    const url = `${SEO_DEFAULTS.siteUrl}/posts/${post.slug}`;
+
+    return {
+      title: `${title} | ${SEO_DEFAULTS.siteName}`,
+      description,
+      keywords: post.tags?.map(tag => tag.name).join(', '),
+      authors: post.author ? [{ name: post.author.name }] : undefined,
+      openGraph: {
+        type: 'article',
+        title,
+        description,
+        url,
+        siteName: SEO_DEFAULTS.siteName,
+        images: [
+          {
+            url: image,
+            width: 1200,
+            height: 630,
+            alt: title,
+          },
+        ],
+        publishedTime: post.publishedAt.toISOString(),
+        modifiedTime: post.updatedAt.toISOString(),
+        authors: post.author ? [post.author.name] : undefined,
+        section: post.category?.name,
+        tags: post.tags?.map(tag => tag.name),
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title,
+        description,
+        images: [image],
+        creator: SEO_DEFAULTS.twitterHandle,
+      },
+      alternates: {
+        canonical: url,
+      },
+    };
+  },
+
+  /**
+   * 生成普通页面的metadata
+   */
+  generatePageMetadata: (page: PageSEOData): MetadataBase => {
+    const title = `${page.title} | ${SEO_DEFAULTS.siteName}`;
+    const image = page.ogImage || SEO_DEFAULTS.defaultImage;
+    const url = page.canonical || SEO_DEFAULTS.siteUrl;
+
+    return {
+      title,
+      description: page.description,
+      keywords: page.keywords?.join(', '),
+      robots: {
+        index: !page.noindex,
+        follow: !page.nofollow,
+        googleBot: {
+          index: !page.noindex,
+          follow: !page.nofollow,
+        },
+      },
+      openGraph: {
+        type: 'website',
+        title: page.title,
+        description: page.description,
+        url,
+        siteName: SEO_DEFAULTS.siteName,
+        images: [
+          {
+            url: image,
+            width: 1200,
+            height: 630,
+            alt: page.title,
+          },
+        ],
+        locale: SEO_DEFAULTS.locale,
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title: page.title,
+        description: page.description,
+        images: [image],
+        creator: SEO_DEFAULTS.twitterHandle,
+      },
+      alternates: {
+        canonical: url,
+      },
+    };
+  },
+
+  /**
+   * 生成商品页面的metadata
+   */
+  generateProductMetadata: (product: ProductSEOData): MetadataBase => {
+    const title = `${product.name} | ${SEO_DEFAULTS.siteName}`;
+    const description = product.description;
+    const image = product.images[0] || SEO_DEFAULTS.defaultImage;
+
+    return {
+      title,
+      description,
+      openGraph: {
+        type: 'website',
+        title: product.name,
+        description,
+        siteName: SEO_DEFAULTS.siteName,
+        images: product.images.map((img, index) => ({
+          url: img,
+          width: 800,
+          height: 600,
+          alt: `${product.name} - 图片 ${index + 1}`,
+        })),
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title: product.name,
+        description,
+        images: [image],
+      },
+    };
+  },
+
+  /**
+   * 生成JSON-LD结构化数据
+   */
+  generateJsonLd: {
+    /**
+     * 网站结构化数据
+     */
+    website: () => ({
+      '@context': 'https://schema.org',
+      '@type': 'WebSite',
+      name: SEO_DEFAULTS.siteName,
+      url: SEO_DEFAULTS.siteUrl,
+      description: SEO_DEFAULTS.defaultDescription,
+      potentialAction: {
+        '@type': 'SearchAction',
+        target: `${SEO_DEFAULTS.siteUrl}/search?q={search_term_string}`,
+        'query-input': 'required name=search_term_string',
+      },
+    }),
+
+    /**
+     * 文章结构化数据
+     */
+    article: (post: PostSEOData) => ({
+      '@context': 'https://schema.org',
+      '@type': 'Article',
+      headline: post.title,
+      description: post.excerpt,
+      image: post.featuredImage || post.ogImage,
+      datePublished: post.publishedAt.toISOString(),
+      dateModified: post.updatedAt.toISOString(),
+      author: post.author ? {
+        '@type': 'Person',
+        name: post.author.name,
+        image: post.author.image,
+      } : undefined,
+      publisher: {
+        '@type': 'Organization',
+        name: SEO_DEFAULTS.siteName,
+        logo: {
+          '@type': 'ImageObject',
+          url: `${SEO_DEFAULTS.siteUrl}/logo.png`,
+        },
+      },
+      mainEntityOfPage: {
+        '@type': 'WebPage',
+        '@id': `${SEO_DEFAULTS.siteUrl}/posts/${post.slug}`,
+      },
+      articleSection: post.category?.name,
+      keywords: post.tags?.map(tag => tag.name).join(', '),
+    }),
+
+    /**
+     * 商品结构化数据
+     */
+    product: (product: ProductSEOData) => ({
+      '@context': 'https://schema.org',
+      '@type': 'Product',
+      name: product.name,
+      description: product.description,
+      image: product.images,
+      brand: product.brand ? {
+        '@type': 'Brand',
+        name: product.brand,
+      } : undefined,
+      category: product.category,
+      sku: product.sku,
+      offers: {
+        '@type': 'Offer',
+        price: product.price,
+        priceCurrency: product.currency,
+        availability: `https://schema.org/${product.availability}`,
+      },
+      aggregateRating: product.reviews ? {
+        '@type': 'AggregateRating',
+        ratingValue: product.reviews.average,
+        reviewCount: product.reviews.count,
+      } : undefined,
+    }),
+
+    /**
+     * 面包屑导航
+     */
+    breadcrumb: (items: Array<{ name: string; url: string }>) => ({
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: items.map((item, index) => ({
+        '@type': 'ListItem',
+        position: index + 1,
+        name: item.name,
+        item: item.url,
+      })),
+    }),
+
+    /**
+     * 组织信息
+     */
+    organization: () => ({
+      '@context': 'https://schema.org',
+      '@type': 'Organization',
+      name: SEO_DEFAULTS.siteName,
+      url: SEO_DEFAULTS.siteUrl,
+      logo: `${SEO_DEFAULTS.siteUrl}/logo.png`,
+      description: SEO_DEFAULTS.defaultDescription,
+      sameAs: [
+        // 添加社交媒体链接
+      ],
+    }),
+  },
+
+  /**
+   * 从内容中提取摘要
+   */
+  extractExcerpt: (content?: string, maxLength: number = 160): string => {
+    if (!content) return '';
+    
+    // 移除HTML标签
+    const textContent = content.replace(/<[^>]*>/g, '');
+    
+    // 截取指定长度
+    if (textContent.length <= maxLength) {
+      return textContent;
+    }
+    
+    // 在单词边界截取
+    const truncated = textContent.substring(0, maxLength);
+    const lastSpace = truncated.lastIndexOf(' ');
+    
+    return lastSpace > 0 
+      ? truncated.substring(0, lastSpace) + '...'
+      : truncated + '...';
+  },
+
+  /**
+   * 生成sitemap数据
+   */
+  generateSitemapUrls: (pages: Array<{
+    url: string;
+    lastModified: Date;
+    changeFrequency?: 'always' | 'hourly' | 'daily' | 'weekly' | 'monthly' | 'yearly' | 'never';
+    priority?: number;
+  }>) => {
+    return pages.map(page => ({
+      url: `${SEO_DEFAULTS.siteUrl}${page.url}`,
+      lastModified: page.lastModified.toISOString(),
+      changeFrequency: page.changeFrequency || 'weekly',
+      priority: page.priority || 0.5,
+    }));
+  },
+
+  /**
    * 验证SEO数据
    */
-  validateSEO: (seoData: SEOData) => {
+  validateSEO: (data: {
+    title?: string;
+    description?: string;
+    keywords?: string[];
+  }) => {
     const issues: string[] = [];
-
-    if (!seoData.title) {
+    
+    if (!data.title) {
       issues.push('缺少标题');
-    } else if (seoData.title.length > 60) {
+    } else if (data.title.length > 60) {
       issues.push('标题过长（建议60字符以内）');
-    } else if (seoData.title.length < 30) {
-      issues.push('标题过短（建议30-60字符）');
+    } else if (data.title.length < 10) {
+      issues.push('标题过短（建议10字符以上）');
     }
-
-    if (!seoData.description) {
+    
+    if (!data.description) {
       issues.push('缺少描述');
-    } else if (seoData.description.length > 160) {
+    } else if (data.description.length > 160) {
       issues.push('描述过长（建议160字符以内）');
-    } else if (seoData.description.length < 120) {
-      issues.push('描述过短（建议120-160字符）');
+    } else if (data.description.length < 50) {
+      issues.push('描述过短（建议50字符以上）');
     }
-
-    if (!seoData.url) {
-      issues.push('缺少URL');
+    
+    if (!data.keywords || data.keywords.length === 0) {
+      issues.push('建议添加关键词');
+    } else if (data.keywords.length > 10) {
+      issues.push('关键词过多（建议10个以内）');
     }
-
-    if (seoData.type === 'article') {
-      if (!seoData.publishedTime) {
-        issues.push('文章缺少发布时间');
-      }
-      if (!seoData.author) {
-        issues.push('文章缺少作者信息');
-      }
-    }
-
+    
     return {
       isValid: issues.length === 0,
       issues,
       score: Math.max(0, 100 - issues.length * 20),
     };
+  },
+
+  /**
+   * 生成robots.txt内容
+   */
+  generateRobotsTxt: (options: {
+    allowAll?: boolean;
+    disallowPaths?: string[];
+    sitemapUrl?: string;
+  } = {}) => {
+    const { allowAll = true, disallowPaths = [], sitemapUrl } = options;
+    
+    let content = 'User-agent: *\n';
+    
+    if (allowAll) {
+      content += 'Allow: /\n';
+    }
+    
+    disallowPaths.forEach(path => {
+      content += `Disallow: ${path}\n`;
+    });
+    
+    if (sitemapUrl) {
+      content += `\nSitemap: ${sitemapUrl}\n`;
+    }
+    
+    return content;
   },
 };
 
@@ -317,4 +664,73 @@ function estimateWordCount(content: string): number {
   const plainText = content.replace(/<[^>]*>/g, '');
   const words = plainText.trim().split(/\s+/);
   return words.filter(word => word.length > 0).length;
-} 
+}
+
+// 基础SEO配置
+export const SEO_DEFAULTS = {
+  siteName: 'Damon Stack',
+  siteUrl: process.env.NEXT_PUBLIC_SITE_URL || 'https://damon-stack.com',
+  defaultTitle: 'Damon Stack - 现代化全栈开发平台',
+  defaultDescription: '基于 Next.js 15 + Mantine 8 + tRPC 的现代化全栈开发平台，提供完整的企业级解决方案',
+  defaultImage: '/images/og-default.jpg',
+  twitterHandle: '@damonstack',
+  locale: 'zh-CN',
+} as const;
+
+// 文章相关类型
+export interface PostSEOData {
+  id: string;
+  title: string;
+  excerpt?: string;
+  content?: string;
+  seoTitle?: string;
+  seoDescription?: string;
+  ogImage?: string;
+  featuredImage?: string;
+  publishedAt: Date;
+  updatedAt: Date;
+  author?: {
+    name: string;
+    image?: string;
+  };
+  category?: {
+    name: string;
+    slug: string;
+  };
+  tags?: Array<{
+    name: string;
+    slug: string;
+  }>;
+  slug: string;
+}
+
+// 页面SEO数据类型
+export interface PageSEOData {
+  title: string;
+  description: string;
+  keywords?: string[];
+  ogImage?: string;
+  canonical?: string;
+  noindex?: boolean;
+  nofollow?: boolean;
+}
+
+// 商品SEO数据类型
+export interface ProductSEOData {
+  name: string;
+  description: string;
+  price: number;
+  currency: string;
+  availability: 'InStock' | 'OutOfStock' | 'PreOrder';
+  images: string[];
+  brand?: string;
+  category?: string;
+  sku?: string;
+  reviews?: {
+    count: number;
+    average: number;
+  };
+}
+
+// 默认导出
+export default seoUtils; 

@@ -10,11 +10,14 @@ import {
   IconShield, 
   IconActivity,
   IconUserPlus,
-  IconAlertCircle
+  IconAlertCircle,
+  IconArticle,
+  IconTag,
+  IconChartBar
 } from '@tabler/icons-react';
-import { StatCard } from '@damon-stack/ui';
-import { UserGrowthChart } from '../../components';
-import { api } from '../../trpc/react';
+import { StatCard, UserGrowthChart } from '@/components';
+import { api } from '@/trpc/react';
+import { useCurrentUser } from '@/hooks/use-current-user';
 
 /**
  * Dashboard 页面

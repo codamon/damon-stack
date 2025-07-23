@@ -3,8 +3,8 @@
  * 为所有 /users/* 路由应用统一的后台管理布局
  */
 
-import { ReactNode } from 'react';
-import { Layout } from '../../components';
+import React from 'react';
+import { Layout } from '@/components';
 
 interface UsersLayoutProps {
   children: ReactNode;

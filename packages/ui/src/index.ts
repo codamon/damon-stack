@@ -70,6 +70,13 @@ export {
   type RichTextEditorProps 
 } from './components/RichTextEditor';
 
+// 导出基础富文本编辑器组件
+export { 
+  BasicRichTextEditor, 
+  default as BasicRichTextEditorDefault, 
+  type BasicRichTextEditorProps 
+} from './components/BasicRichTextEditor';
+
 // 导出页面头部组件
 export { 
   PageHeader, 
@@ -180,4 +187,11 @@ export {
   type NewsletterSignupProps,
   type NewsletterSignupData,
   type NewsletterBenefit
-} from './components/NewsletterSignup'; 
+} from './components/NewsletterSignup';
+
+// 搜索组件
+export { 
+  SearchBox,
+  type SearchBoxProps,
+  type SearchSuggestion
+} from './components/SearchBox'; 

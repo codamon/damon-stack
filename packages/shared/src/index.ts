@@ -78,8 +78,27 @@ export {
   useExportStats,
 } from './hooks/useStats';
 
+// 搜索相关Hooks
+export {
+  useSearch,
+  useSearchHistory,
+  useFullTextSearch,
+  useSearchSuggestions,
+  useTrendingSearch,
+  useSearchClickTracking,
+  useSearchAnalytics,
+  type SearchFilters,
+} from './hooks/useSearch';
+
 // SEO工具函数
-export { seoUtils } from './utils/seo';
+export { 
+  seoUtils, 
+  SEO_DEFAULTS,
+  type MetadataBase,
+  type PostSEOData,
+  type PageSEOData,
+  type ProductSEOData
+} from './utils/seo';
 
 // 数据格式化工具函数
 export { formatUtils } from './utils/format';

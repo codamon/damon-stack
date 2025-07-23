@@ -51,6 +51,7 @@
   "license": "MIT",
   "dependencies": {
     "@mantine/tiptap": "^8.1.2",
+    "@tiptap/extension-character-count": "^2.23.0",
     "@tiptap/extension-highlight": "^2.22.3",
     "@tiptap/extension-image": "^2.22.3",
     "@tiptap/extension-link": "^2.22.3",

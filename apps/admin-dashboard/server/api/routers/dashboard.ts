@@ -4,7 +4,7 @@
  */
 
 import { z } from 'zod';
-import { createTRPCRouter, protectedProcedure, adminProcedure } from '../trpc';
+import { createTRPCRouter, protectedProcedure, adminProcedure, publicProcedure } from '../trpc';
 
 /**
  * Dashboard 统计数据响应类型
@@ -301,6 +301,111 @@ export const dashboardRouter = createTRPCRouter({
       } catch (error) {
         console.error('获取用户注册趋势失败:', error);
         throw new Error('无法获取趋势数据，请稍后重试');
+      }
+    }),
+
+  /**
+   * 获取公开的网站统计数据（博客前端用）
+   * 无需认证访问
+   */
+  getPublicStats: publicProcedure
+    .query(async ({ ctx }) => {
+      try {
+        const [
+          totalPosts,
+          publishedPosts,
+          totalCategories,
+          totalTags,
+          featuredPosts,
+          recentPosts,
+          totalViews
+        ] = await Promise.all([
+          // 总文章数
+          ctx.db.post.count(),
+          
+          // 已发布文章数
+          ctx.db.post.count({
+            where: {
+              status: 'PUBLISHED',
+              publishedAt: { lte: new Date() }
+            }
+          }),
+          
+          // 分类数量
+          ctx.db.category.count(),
+          
+          // 标签数量
+          ctx.db.tag.count(),
+          
+          // 精选文章数
+          ctx.db.post.count({
+            where: {
+              status: 'PUBLISHED',
+              publishedAt: { lte: new Date() },
+              featured: true
+            }
+          }),
+          
+          // 最近30天发布的文章数
+          ctx.db.post.count({
+            where: {
+              status: 'PUBLISHED',
+              publishedAt: { 
+                lte: new Date(),
+                gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
+              }
+            }
+          }),
+          
+          // 总浏览量（所有已发布文章的浏览量之和）
+          ctx.db.post.aggregate({
+            where: {
+              status: 'PUBLISHED',
+              publishedAt: { lte: new Date() }
+            },
+            _sum: {
+              viewCount: true
+            }
+          }).then(result => result._sum.viewCount || 0)
+        ]);
+
+        // 获取最近更新时间（最新发布的文章时间）
+        const latestPost = await ctx.db.post.findFirst({
+          where: {
+            status: 'PUBLISHED',
+            publishedAt: { lte: new Date() }
+          },
+          orderBy: {
+            publishedAt: 'desc'
+          },
+          select: {
+            publishedAt: true
+          }
+        });
+
+        return {
+          content: {
+            totalPosts,
+            publishedPosts,
+            totalCategories,
+            totalTags,
+            featuredPosts,
+            recentPosts, // 最近30天
+            totalViews
+          },
+          activity: {
+            lastUpdate: latestPost?.publishedAt || new Date(),
+            postsThisMonth: recentPosts,
+            averageViewsPerPost: publishedPosts > 0 ? Math.round(totalViews / publishedPosts) : 0
+          },
+          meta: {
+            dataGeneratedAt: new Date(),
+            cacheRecommendedDuration: 300 // 推荐缓存5分钟
+          }
+        };
+      } catch (error) {
+        console.error('获取公开统计数据失败:', error);
+        throw new Error('无法获取统计数据，请稍后重试');
       }
     }),
 });

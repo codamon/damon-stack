@@ -18,12 +18,13 @@ import {
   Box,
   Title
 } from '@mantine/core';
-import { IconPlus, IconEdit, IconTrash, IconCategory } from '@tabler/icons-react';
+import { IconChevronDown, IconPlus, IconEdit, IconTrash, IconFolder } from '@tabler/icons-react';
 import { useForm } from '@mantine/form';
 import { notifications } from '@mantine/notifications';
 import '@damon-stack/ui';
-import { api } from '../../../trpc/react';
+import { api } from '@/trpc/react';
 import { CategoryTreeTable } from '@damon-stack/ui';
+import type { Category } from '@damon-stack/feature-cms';
 
 // 简化的类型定义
 interface Category {
@@ -150,7 +151,7 @@ export default function CategoriesPage() {
   const renderEmptyState = () => (
     <Center>
       <Stack align="center" gap="md">
-        <IconCategory size={48} color="var(--mantine-color-gray-6)" />
+        <IconFolder size={48} color="var(--mantine-color-gray-6)" />
         <Text c="dimmed">暂无分类数据</Text>
         <Button 
           variant="light" 

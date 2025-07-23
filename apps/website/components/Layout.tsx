@@ -30,7 +30,10 @@ import {
   IconBrandGithub,
   IconMail,
   IconMapPin,
-  IconPhone
+  IconPhone,
+  IconLogin,
+  IconUserPlus,
+  IconUser
 } from '@tabler/icons-react';
 import Link from 'next/link';
 
@@ -160,6 +163,39 @@ export function Layout({ children }: LayoutProps) {
                   </Button>
                 ))}
                 
+                {/* 用户认证链接 */}
+                <Button
+                  component={Link}
+                  href="/auth/signin"
+                  variant="subtle"
+                  radius="xl"
+                  size="md"
+                  leftSection={<IconLogin size={18} />}
+                  className="creative-button icon-bounce"
+                  style={{
+                    color: 'white',
+                    fontWeight: 500,
+                  }}
+                >
+                  登录
+                </Button>
+                
+                <Button
+                  component={Link}
+                  href="/auth/signup"
+                  variant="light"
+                  radius="xl"
+                  size="md"
+                  leftSection={<IconUserPlus size={18} />}
+                  className="creative-button icon-bounce"
+                  style={{
+                    color: 'var(--mantine-color-blue-7)',
+                    fontWeight: 500,
+                  }}
+                >
+                  注册
+                </Button>
+                
                 <Button
                   component="a"
                   href="/admin"
@@ -170,7 +206,7 @@ export function Layout({ children }: LayoutProps) {
                   leftSection={<IconRocket size={18} />}
                   className="creative-button pulse-creative"
                 >
-                  立即体验
+                  管理后台
                 </Button>
               </Group>
             </Group>
@@ -236,6 +272,89 @@ export function Layout({ children }: LayoutProps) {
                   </Group>
                 </UnstyledButton>
               ))}
+              
+              {/* 用户认证链接 - 移动端 */}
+              <Box pt="md" style={{ borderTop: '1px solid rgba(255, 255, 255, 0.1)' }}>
+                <Text size="xs" c="gray.4" mb="sm" fw={600}>
+                  用户中心
+                </Text>
+                <Stack gap="xs">
+                  <UnstyledButton 
+                    component={Link} 
+                    href="/auth/signin"
+                    className="glass-morphism creative-card icon-bounce"
+                    style={{
+                      padding: '12px 16px',
+                      borderRadius: '12px',
+                      width: '100%',
+                    }}
+                  >
+                    <Group gap="md">
+                      <ActionIcon
+                        size="sm"
+                        radius="xl"
+                        variant="light"
+                        color="blue"
+                      >
+                        <IconLogin size={16} />
+                      </ActionIcon>
+                      <Text c="white" fw={500} size="sm">
+                        登录
+                      </Text>
+                    </Group>
+                  </UnstyledButton>
+                  
+                  <UnstyledButton 
+                    component={Link} 
+                    href="/auth/signup"
+                    className="glass-morphism creative-card icon-bounce"
+                    style={{
+                      padding: '12px 16px',
+                      borderRadius: '12px',
+                      width: '100%',
+                    }}
+                  >
+                    <Group gap="md">
+                      <ActionIcon
+                        size="sm"
+                        radius="xl"
+                        variant="light"
+                        color="green"
+                      >
+                        <IconUserPlus size={16} />
+                      </ActionIcon>
+                      <Text c="white" fw={500} size="sm">
+                        注册账户
+                      </Text>
+                    </Group>
+                  </UnstyledButton>
+                  
+                  <UnstyledButton 
+                    component={Link} 
+                    href="/account/profile"
+                    className="glass-morphism creative-card icon-bounce"
+                    style={{
+                      padding: '12px 16px',
+                      borderRadius: '12px',
+                      width: '100%',
+                    }}
+                  >
+                    <Group gap="md">
+                      <ActionIcon
+                        size="sm"
+                        radius="xl"
+                        variant="light"
+                        color="violet"
+                      >
+                        <IconUser size={16} />
+                      </ActionIcon>
+                      <Text c="white" fw={500} size="sm">
+                        个人中心
+                      </Text>
+                    </Group>
+                  </UnstyledButton>
+                </Stack>
+              </Box>
             </Stack>
             
             <Box mt="auto">
@@ -328,6 +447,24 @@ export function Layout({ children }: LayoutProps) {
                     </Anchor>
                     <Anchor href="/blog" size="sm" c="gray.4" className="icon-bounce">
                       技术博客
+                    </Anchor>
+                  </Stack>
+                  
+                  <Stack gap="xs">
+                    <Text size="sm" fw={600} c="white">
+                      用户中心
+                    </Text>
+                    <Anchor href="/auth/signin" size="sm" c="gray.4" className="icon-bounce">
+                      用户登录
+                    </Anchor>
+                    <Anchor href="/auth/signup" size="sm" c="gray.4" className="icon-bounce">
+                      注册账户
+                    </Anchor>
+                    <Anchor href="/account/profile" size="sm" c="gray.4" className="icon-bounce">
+                      个人资料
+                    </Anchor>
+                    <Anchor href="/account/security" size="sm" c="gray.4" className="icon-bounce">
+                      安全设置
                     </Anchor>
                   </Stack>
                   

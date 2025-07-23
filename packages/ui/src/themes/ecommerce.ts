@@ -137,7 +137,7 @@ export const ecommerceThemeOverride: MantineThemeOverride = {
           transition: 'all 200ms cubic-bezier(0.4, 0, 0.2, 1)',
           
           // 主要CTA按钮
-          '&[data-variant="filled"]': {
+          '&[dataVariant="filled"]': {
             backgroundColor: ecommerceColors.primary,
             border: `1px solid ${ecommerceColors.primary}`,
             fontSize: rem(16),
@@ -153,7 +153,7 @@ export const ecommerceThemeOverride: MantineThemeOverride = {
           },
           
           // 次要按钮
-          '&[data-variant="outline"]': {
+          '&[dataVariant="outline"]': {
             border: `2px solid ${ecommerceColors.primary}`,
             color: ecommerceColors.primary,
             fontWeight: 600,
@@ -164,7 +164,7 @@ export const ecommerceThemeOverride: MantineThemeOverride = {
           },
           
           // 成功按钮（已添加到购物车等）
-          '&[data-variant="success"]': {
+          '&[dataVariant="success"]': {
             backgroundColor: ecommerceColors.success,
             color: 'white',
             '&:hover': {
@@ -173,7 +173,7 @@ export const ecommerceThemeOverride: MantineThemeOverride = {
           },
           
           // 危险按钮（删除等）
-          '&[data-variant="danger"]': {
+          '&[dataVariant="danger"]': {
             backgroundColor: ecommerceColors.danger,
             color: 'white',
             '&:hover': {
@@ -250,29 +250,29 @@ export const ecommerceThemeOverride: MantineThemeOverride = {
           letterSpacing: '0.5px',
           
           // 销售徽章
-          '&[data-variant="sale"]': {
+          '&[dataVariant="sale"]': {
             backgroundColor: ecommerceColors.sale,
             color: 'white',
           },
           
           // 新品徽章
-          '&[data-variant="new"]': {
+          '&[dataVariant="new"]': {
             backgroundColor: ecommerceColors.new,
             color: 'white',
           },
           
           // 库存状态
-          '&[data-variant="in-stock"]': {
+          '&[dataVariant="in-stock"]': {
             backgroundColor: ecommerceColors.inStock,
             color: 'white',
           },
           
-          '&[data-variant="low-stock"]': {
+          '&[dataVariant="low-stock"]': {
             backgroundColor: ecommerceColors.lowStock,
             color: 'white',
           },
           
-          '&[data-variant="out-of-stock"]': {
+          '&[dataVariant="out-of-stock"]': {
             backgroundColor: ecommerceColors.outOfStock,
             color: 'white',
           },
@@ -284,19 +284,19 @@ export const ecommerceThemeOverride: MantineThemeOverride = {
     Text: {
       styles: {
         root: {
-          '&[data-variant="price"]': {
+          '&[dataVariant="price"]': {
             color: ecommerceColors.textPrice,
             fontWeight: 700,
             fontSize: rem(18),
           },
           
-          '&[data-variant="original-price"]': {
+          '&[dataVariant="original-price"]': {
             color: ecommerceColors.textOriginalPrice,
             textDecoration: 'line-through',
             fontSize: rem(14),
           },
           
-          '&[data-variant="discount"]': {
+          '&[dataVariant="discount"]': {
             color: ecommerceColors.sale,
             fontWeight: 600,
             fontSize: rem(14),
@@ -327,12 +327,12 @@ export const ecommerceThemeOverride: MantineThemeOverride = {
       },
       styles: {
         root: {
-          '&[data-variant="success"]': {
+          '&[dataVariant="success"]': {
             backgroundColor: '#dcfce7', // green-100
             borderColor: ecommerceColors.success,
           },
           
-          '&[data-variant="error"]': {
+          '&[dataVariant="error"]': {
             backgroundColor: '#fee2e2', // red-100
             borderColor: ecommerceColors.danger,
           },

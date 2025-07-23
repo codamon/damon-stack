@@ -13,14 +13,27 @@ import { auth } from '../../auth';
  * 1. 创建 tRPC Context
  * 包含数据库客户端、请求头和用户会话信息
  */
-export const createTRPCContext = async (opts?: { headers?: Record<string, string> }) => {
+export const createTRPCContext = async (opts?: { 
+  headers?: Record<string, string>;
+  req?: any; // Next.js Request object
+}) => {
   // 获取当前用户会话
   const session = await auth();
+  
+  // 从headers中提取IP地址和User Agent
+  const headers = opts?.headers ?? {};
+  const ip = headers['x-forwarded-for'] || 
+            headers['x-real-ip'] || 
+            headers['x-client-ip'] ||
+            'unknown';
+  const userAgent = headers['user-agent'] || 'unknown';
   
   return {
     db,
     session,
-    headers: opts?.headers ?? {},
+    headers,
+    ip: Array.isArray(ip) ? ip[0] : ip,
+    userAgent,
   };
 };
 

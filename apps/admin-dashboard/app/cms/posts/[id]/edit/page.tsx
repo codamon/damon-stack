@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from 'react';
 import { 
-  Container, 
   Stack, 
   Group, 
   Button, 
@@ -17,16 +16,21 @@ import {
   Loader,
   Center,
   Badge,
+  Title
 } from '@mantine/core';
 import { DateTimePicker } from '@mantine/dates';
 import { useForm } from '@mantine/form';
 import { notifications } from '@mantine/notifications';
 import { useRouter } from 'next/navigation';
-import { IconArrowLeft, IconDeviceFloppy, IconSend, IconEye, IconHome, IconFolder, IconNews, IconEdit } from '@tabler/icons-react';
-import { RichTextEditor, PageHeader, type BreadcrumbItem } from '@damon-stack/ui';
-import { api } from '../../../../../trpc/react';
+import { IconArrowLeft, IconDeviceFloppy, IconSend, IconEye } from '@tabler/icons-react';
+import { BasicRichTextEditor } from '@damon-stack/ui';
+import { api } from '@/trpc/react';
 import { useSession } from 'next-auth/react';
 import type { PostStatus, UpdatePostInput } from '@damon-stack/feature-cms';
+
+// 导入必要的样式
+import '@mantine/core/styles.css';
+import '@mantine/tiptap/styles.css';
 
 // 状态选项
 const statusOptions = [
@@ -85,14 +89,6 @@ export default function EditPostPage({ params }: Props) {
 
   // 获取分类列表
   const { data: categoriesData } = api.category.list.useQuery();
-
-  // 面包屑导航配置
-  const breadcrumbItems: BreadcrumbItem[] = [
-    { title: '首页', href: '/dashboard', icon: IconHome },
-    { title: 'CMS', href: '/cms', icon: IconFolder },
-    { title: '文章管理', href: '/cms/posts', icon: IconNews },
-    { title: '编辑文章' },
-  ];
 
   // 更新文章
   const updateMutation = api.post.update.useMutation({
@@ -196,6 +192,26 @@ export default function EditPostPage({ params }: Props) {
     }
   };
 
+  // 预览功能
+  const handlePreview = () => {
+    // 创建预览URL，可以在新窗口打开
+    const previewUrl = `/cms/posts/${postId}/preview`;
+    window.open(previewUrl, '_blank');
+  };
+
+  // 发布文章
+  const handlePublish = () => {
+    if (form.validate().hasErrors) {
+      notifications.show({
+        title: '表单验证失败',
+        message: '请检查表单中的错误',
+        color: 'red',
+      });
+      return;
+    }
+    handleSubmit(form.values, 'PUBLISHED');
+  };
+
   // 提交表单
   const handleSubmit = async (values: typeof form.values, status?: PostStatus) => {
     if (!session?.user?.id) {
@@ -231,288 +247,323 @@ export default function EditPostPage({ params }: Props) {
 
   if (postError) {
     return (
-      <Container size="xl">
-        <Alert color="red" title="加载失败" mt="xl">
+      <Stack gap="xl">
+        <Group justify="space-between" align="center">
+          <Title order={1}>编辑文章</Title>
+          <Button
+            leftSection={<IconArrowLeft size={16} />}
+            onClick={() => router.back()}
+            variant="default"
+          >
+            返回
+          </Button>
+        </Group>
+        <Alert color="red" title="加载失败">
           {postError.message}
         </Alert>
-      </Container>
+      </Stack>
     );
   }
 
   if (isLoadingPost) {
     return (
-      <Container size="xl">
-        <Center mt="xl">
+      <Stack gap="xl">
+        <Group justify="space-between" align="center">
+          <Title order={1}>编辑文章</Title>
+          <Button
+            leftSection={<IconArrowLeft size={16} />}
+            onClick={() => router.back()}
+            variant="default"
+          >
+            返回
+          </Button>
+        </Group>
+        <Center>
           <Loader size="lg" />
         </Center>
-      </Container>
+      </Stack>
     );
   }
 
   if (!post) {
     return (
-      <Container size="xl">
-        <Alert color="red" title="文章不存在" mt="xl">
+      <Stack gap="xl">
+        <Group justify="space-between" align="center">
+          <Title order={1}>编辑文章</Title>
+          <Button
+            leftSection={<IconArrowLeft size={16} />}
+            onClick={() => router.back()}
+            variant="default"
+          >
+            返回
+          </Button>
+        </Group>
+        <Alert color="red" title="文章不存在">
           请检查文章ID是否正确
         </Alert>
-      </Container>
+      </Stack>
     );
   }
 
   return (
-    <Container size="xl">
-      <Stack gap="xl">
-        {/* 页面头部 */}
-        <PageHeader
-          title="编辑文章"
-          description={post.title}
-          icon={<IconEdit size={24} />}
-          breadcrumbs={breadcrumbItems}
-          actions={
-            <Group gap="sm">
-              <Button
-                variant="light"
-                leftSection={<IconEye size={16} />}
-                onClick={() => {
-                  // TODO: 实现预览功能
-                  console.log('预览文章:', post.id);
-                }}
-              >
-                预览
-              </Button>
-              <Button
-                variant="default"
-                leftSection={<IconArrowLeft size={16} />}
-                onClick={() => router.back()}
-              >
-                返回
-              </Button>
-            </Group>
-          }
-        />
+    <Stack gap="xl">
+      {/* 页面标题 - Dashboard简洁风格 */}
+      <Group justify="space-between" align="center">
+        <Title order={1}>编辑文章</Title>
+        <Group gap="sm">
+          <Button
+            variant="light"
+            leftSection={<IconEye size={16} />}
+            onClick={handlePreview}
+          >
+            预览
+          </Button>
+          <Button
+            leftSection={<IconArrowLeft size={16} />}
+            onClick={() => router.back()}
+            variant="default"
+          >
+            返回
+          </Button>
+        </Group>
+      </Group>
 
-        {/* 文章信息 */}
-        <Paper shadow="sm" p="xl" bg="blue.0">
-          <Group justify="space-between">
-            <Group gap="xl">
-              <div>
-                <Text size="sm" c="dimmed">状态</Text>
-                <Badge color={statusMap[post.status].color} variant="light" size="sm">
-                  {statusMap[post.status].label}
-                </Badge>
-              </div>
-              <div>
-                <Text size="sm" c="dimmed">作者</Text>
-                <Text size="sm" fw={500}>
-                  {post.author.name || post.author.email}
-                </Text>
-              </div>
-              <div>
-                <Text size="sm" c="dimmed">创建时间</Text>
-                <Text size="sm" fw={500}>
-                  {new Date(post.createdAt).toLocaleString('zh-CN')}
-                </Text>
-              </div>
-              <div>
-                <Text size="sm" c="dimmed">浏览次数</Text>
-                <Text size="sm" fw={500}>
-                  {post.viewCount.toLocaleString()}
-                </Text>
-              </div>
-            </Group>
+      {/* 文章信息 */}
+      <Paper p="xl" withBorder style={{ backgroundColor: 'var(--mantine-color-blue-0)' }}>
+        <Group justify="space-between">
+          <Group gap="xl">
+            <div>
+              <Text size="sm" c="dimmed">状态</Text>
+              <Badge color={statusMap[post.status].color} variant="light" size="sm">
+                {statusMap[post.status].label}
+              </Badge>
+            </div>
+            <div>
+              <Text size="sm" c="dimmed">作者</Text>
+              <Text size="sm" fw={500}>
+                {post.author.name || post.author.email}
+              </Text>
+            </div>
+            <div>
+              <Text size="sm" c="dimmed">创建时间</Text>
+              <Text size="sm" fw={500}>
+                {new Date(post.createdAt).toLocaleString('zh-CN')}
+              </Text>
+            </div>
+            <div>
+              <Text size="sm" c="dimmed">浏览次数</Text>
+              <Text size="sm" fw={500}>
+                {post.viewCount.toLocaleString()}
+              </Text>
+            </div>
           </Group>
-        </Paper>
+        </Group>
+      </Paper>
 
-        <form onSubmit={form.onSubmit((values) => handleSubmit(values))}>
-          <Grid>
-            {/* 主要内容区域 */}
-            <Grid.Col span={{ base: 12, lg: 8 }}>
-              <Stack gap="xl">
-                {/* 基础信息 */}
-                <Paper shadow="sm" p="xl">
-                  <Stack gap="md">
-                    <Text fw={500} size="lg">基础信息</Text>
-                    
-                    <TextInput
-                      label="文章标题"
-                      placeholder="输入文章标题..."
+      <form onSubmit={form.onSubmit((values) => handleSubmit(values))}>
+        <Grid>
+          {/* 主要内容区域 */}
+          <Grid.Col span={{ base: 12, lg: 8 }}>
+            <Stack gap="xl">
+              {/* 基础信息 */}
+              <Paper p="xl" withBorder>
+                <Stack gap="md">
+                  <Text fw={500} size="lg">基础信息</Text>
+                  
+                  <TextInput
+                    label="文章标题"
+                    placeholder="输入文章标题..."
+                    required
+                    {...form.getInputProps('title')}
+                    onChange={(event) => handleTitleChange(event.currentTarget.value)}
+                  />
+
+                  <TextInput
+                    label="URL标识符"
+                    placeholder="url-friendly-slug"
+                    description="用于生成文章的访问链接，只能包含小写字母、数字和连字符"
+                    required
+                    {...form.getInputProps('slug')}
+                  />
+
+                  <Textarea
+                    label="文章摘要"
+                    placeholder="简要描述文章内容..."
+                    description="用于文章列表和搜索引擎优化"
+                    rows={3}
+                    {...form.getInputProps('excerpt')}
+                  />
+
+                  <TextInput
+                    label="封面图片"
+                    placeholder="https://example.com/image.jpg"
+                    description="文章封面图片的URL地址"
+                    {...form.getInputProps('coverImage')}
+                  />
+                </Stack>
+              </Paper>
+
+              {/* 文章内容 */}
+              <Paper p="xl" withBorder>
+                <Stack gap="md">
+                  <Text fw={500} size="lg">文章内容</Text>
+                  
+                  <BasicRichTextEditor
+                    value={form.values.content}
+                    onChange={(html) => form.setFieldValue('content', html)}
+                    placeholder="开始编写您的文章内容..."
+                    minHeight={400}
+                  />
+                  
+                  {form.errors.content && (
+                    <Text size="sm" c="red">
+                      {form.errors.content}
+                    </Text>
+                  )}
+                </Stack>
+              </Paper>
+
+              {/* SEO 设置 */}
+              <Paper p="xl" withBorder>
+                <Stack gap="md">
+                  <Text fw={500} size="lg">SEO 设置</Text>
+                  
+                  <TextInput
+                    label="SEO 标题"
+                    placeholder="搜索引擎优化标题..."
+                    description="如果留空，将使用文章标题"
+                    {...form.getInputProps('metaTitle')}
+                  />
+
+                  <Textarea
+                    label="SEO 描述"
+                    placeholder="搜索引擎优化描述..."
+                    description="建议长度 120-160 字符"
+                    rows={3}
+                    {...form.getInputProps('metaDescription')}
+                  />
+
+                  <TextInput
+                    label="关键词"
+                    placeholder="关键词1, 关键词2, 关键词3"
+                    description="多个关键词用逗号分隔"
+                    {...form.getInputProps('keywords')}
+                  />
+                </Stack>
+              </Paper>
+            </Stack>
+          </Grid.Col>
+
+          {/* 侧边栏 */}
+          <Grid.Col span={{ base: 12, lg: 4 }}>
+            <Stack gap="xl">
+              {/* 发布设置 */}
+              <Paper p="xl" withBorder>
+                <Stack gap="md">
+                  <Text fw={500} size="lg">发布设置</Text>
+                  
+                  <Select
+                    label="发布状态"
+                    data={statusOptions}
+                    {...form.getInputProps('status')}
+                  />
+
+                  <Select
+                    label="文章分类"
+                    placeholder="选择分类..."
+                    data={[
+                      { value: '', label: '无分类' },
+                      ...categoryOptions
+                    ]}
+                    {...form.getInputProps('categoryId')}
+                    clearable
+                  />
+
+                  <Switch
+                    label="精选文章"
+                    description="是否在首页或特殊位置展示"
+                    {...form.getInputProps('featured', { type: 'checkbox' })}
+                  />
+
+                  {form.values.status === 'PUBLISHED' && (
+                    <DateTimePicker
+                      label="发布时间"
+                      placeholder="选择发布时间..."
+                      description="留空则使用当前时间"
+                      {...form.getInputProps('publishedAt')}
+                    />
+                  )}
+
+                  {form.values.status === 'SCHEDULED' && (
+                    <DateTimePicker
+                      label="定时发布"
+                      placeholder="选择发布时间..."
                       required
-                      {...form.getInputProps('title')}
-                      onChange={(event) => handleTitleChange(event.currentTarget.value)}
+                      {...form.getInputProps('scheduledAt')}
                     />
+                  )}
+                </Stack>
+              </Paper>
 
-                    <TextInput
-                      label="URL标识符"
-                      placeholder="url-friendly-slug"
-                      description="用于生成文章的访问链接，只能包含小写字母、数字和连字符"
-                      required
-                      {...form.getInputProps('slug')}
-                    />
+              {/* 操作按钮 */}
+              <Paper p="xl" withBorder>
+                <Stack gap="md">
+                  <Text fw={500} size="lg">操作</Text>
+                  
+                  <Button
+                    type="submit"
+                    fullWidth
+                    variant="default"
+                    loading={isSubmitting && form.values.status === 'DRAFT'}
+                    leftSection={<IconDeviceFloppy size={16} />}
+                    onClick={() => {
+                      form.setFieldValue('status', 'DRAFT');
+                      form.onSubmit((values) => handleSubmit(values, 'DRAFT'))();
+                    }}
+                  >
+                    保存为草稿
+                  </Button>
 
-                    <Textarea
-                      label="文章摘要"
-                      placeholder="简要描述文章内容..."
-                      description="用于文章列表和搜索引擎优化"
-                      rows={3}
-                      {...form.getInputProps('excerpt')}
-                    />
-
-                    <TextInput
-                      label="封面图片"
-                      placeholder="https://example.com/image.jpg"
-                      description="文章封面图片的URL地址"
-                      {...form.getInputProps('coverImage')}
-                    />
-                  </Stack>
-                </Paper>
-
-                {/* 文章内容 */}
-                <Paper shadow="sm" p="xl">
-                  <Stack gap="md">
-                    <Text fw={500} size="lg">文章内容</Text>
-                    
-                    <RichTextEditor
-                      value={form.values.content}
-                      onChange={(html) => form.setFieldValue('content', html)}
-                      placeholder="开始编写您的文章内容..."
-                      minHeight={400}
-                    />
-                    
-                    {form.errors.content && (
-                      <Text size="sm" c="red">
-                        {form.errors.content}
-                      </Text>
-                    )}
-                  </Stack>
-                </Paper>
-
-                {/* SEO 设置 */}
-                <Paper shadow="sm" p="xl">
-                  <Stack gap="md">
-                    <Text fw={500} size="lg">SEO 设置</Text>
-                    
-                    <TextInput
-                      label="SEO 标题"
-                      placeholder="搜索引擎优化标题..."
-                      description="如果留空，将使用文章标题"
-                      {...form.getInputProps('metaTitle')}
-                    />
-
-                    <Textarea
-                      label="SEO 描述"
-                      placeholder="搜索引擎优化描述..."
-                      description="建议长度 120-160 字符"
-                      rows={3}
-                      {...form.getInputProps('metaDescription')}
-                    />
-
-                    <TextInput
-                      label="关键词"
-                      placeholder="关键词1, 关键词2, 关键词3"
-                      description="多个关键词用逗号分隔"
-                      {...form.getInputProps('keywords')}
-                    />
-                  </Stack>
-                </Paper>
-              </Stack>
-            </Grid.Col>
-
-            {/* 侧边栏 */}
-            <Grid.Col span={{ base: 12, lg: 4 }}>
-              <Stack gap="xl">
-                {/* 发布设置 */}
-                <Paper shadow="sm" p="xl">
-                  <Stack gap="md">
-                    <Text fw={500} size="lg">发布设置</Text>
-                    
-                    <Select
-                      label="发布状态"
-                      data={statusOptions}
-                      {...form.getInputProps('status')}
-                    />
-
-                    <Select
-                      label="文章分类"
-                      placeholder="选择分类..."
-                      data={[
-                        { value: '', label: '无分类' },
-                        ...categoryOptions
-                      ]}
-                      {...form.getInputProps('categoryId')}
-                      clearable
-                    />
-
-                    <Switch
-                      label="精选文章"
-                      description="是否在首页或特殊位置展示"
-                      {...form.getInputProps('featured', { type: 'checkbox' })}
-                    />
-
-                    {form.values.status === 'PUBLISHED' && (
-                      <DateTimePicker
-                        label="发布时间"
-                        placeholder="选择发布时间..."
-                        description="留空则使用当前时间"
-                        {...form.getInputProps('publishedAt')}
-                      />
-                    )}
-
-                    {form.values.status === 'SCHEDULED' && (
-                      <DateTimePicker
-                        label="定时发布"
-                        placeholder="选择发布时间..."
-                        required
-                        {...form.getInputProps('scheduledAt')}
-                      />
-                    )}
-                  </Stack>
-                </Paper>
-
-                {/* 操作按钮 */}
-                <Paper shadow="sm" p="xl">
-                  <Stack gap="md">
-                    <Text fw={500} size="lg">操作</Text>
-                    
-                    <Button
-                      type="submit"
-                      fullWidth
-                      variant="default"
-                      loading={isSubmitting && form.values.status === 'DRAFT'}
-                      leftSection={<IconDeviceFloppy size={16} />}
-                      onClick={() => {
-                        form.setFieldValue('status', 'DRAFT');
-                        form.onSubmit((values) => handleSubmit(values, 'DRAFT'))();
-                      }}
-                    >
-                      保存为草稿
-                    </Button>
-
+                  {post.status === 'DRAFT' ? (
                     <Button
                       fullWidth
                       color="green"
+                      variant="filled"
                       loading={isSubmitting && form.values.status === 'PUBLISHED'}
                       leftSection={<IconSend size={16} />}
-                      onClick={() => {
-                        if (form.validate().hasErrors) {
-                          notifications.show({
-                            title: '表单验证失败',
-                            message: '请检查表单中的错误',
-                            color: 'red',
-                          });
-                          return;
-                        }
-                        handleSubmit(form.values, 'PUBLISHED');
-                      }}
+                      onClick={handlePublish}
                     >
-                      {post.status === 'PUBLISHED' ? '更新文章' : '发布文章'}
+                      发布文章
                     </Button>
-                  </Stack>
-                </Paper>
-              </Stack>
-            </Grid.Col>
-          </Grid>
-        </form>
-      </Stack>
-    </Container>
+                  ) : post.status === 'PUBLISHED' ? (
+                    <Button
+                      fullWidth
+                      color="blue"
+                      variant="filled"
+                      loading={isSubmitting}
+                      leftSection={<IconDeviceFloppy size={16} />}
+                      onClick={() => handleSubmit(form.values)}
+                    >
+                      更新已发布文章
+                    </Button>
+                  ) : (
+                    <Button
+                      fullWidth
+                      color="green"
+                      variant="filled"
+                      loading={isSubmitting}
+                      leftSection={<IconSend size={16} />}
+                      onClick={handlePublish}
+                    >
+                      重新发布
+                    </Button>
+                  )}
+                </Stack>
+              </Paper>
+            </Stack>
+          </Grid.Col>
+        </Grid>
+      </form>
+    </Stack>
   );
 } 

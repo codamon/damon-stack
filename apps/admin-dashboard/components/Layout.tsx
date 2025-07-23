@@ -31,7 +31,8 @@ import {
   IconLogout,
   IconUser,
   IconFiles,
-  IconCategory
+  IconCategory,
+  IconUserCircle
 } from '@tabler/icons-react';
 import { logoutAction } from '../app/actions/auth';
 import { useCurrentUser } from '../hooks/use-current-user';
@@ -51,6 +52,12 @@ const navigationItems = [
     label: '用户管理',
     href: '/users',
     icon: IconUsers,
+    requireRole: 'admin', // 🔒 仅管理员可访问
+  },
+  {
+    label: '前端用户',
+    href: '/customers',
+    icon: IconUserCircle,
     requireRole: 'admin', // 🔒 仅管理员可访问
   },
   {
@@ -75,6 +82,12 @@ const navigationItems = [
     label: '系统设置',
     href: '/settings',
     icon: IconSettings,
+    requireRole: 'admin', // 🔒 仅管理员可访问
+  },
+  {
+    label: 'SEO管理',
+    href: '/settings/seo',
+    icon: IconChartBar,
     requireRole: 'admin', // 🔒 仅管理员可访问
   },
 ];

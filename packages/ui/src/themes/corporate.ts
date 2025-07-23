@@ -120,7 +120,7 @@ export const corporateThemeOverride: MantineThemeOverride = {
           transition: 'all 200ms cubic-bezier(0.4, 0, 0.2, 1)',
           
           // 主要按钮样式
-          '&[data-variant="filled"]': {
+          '&[dataVariant="filled"]': {
             backgroundColor: corporateColors.primary,
             border: `1px solid ${corporateColors.primary}`,
             '&:hover': {
@@ -131,7 +131,7 @@ export const corporateThemeOverride: MantineThemeOverride = {
           },
           
           // 次要按钮样式
-          '&[data-variant="outline"]': {
+          '&[dataVariant="outline"]': {
             border: `1px solid ${corporateColors.primary}`,
             color: corporateColors.primary,
             '&:hover': {

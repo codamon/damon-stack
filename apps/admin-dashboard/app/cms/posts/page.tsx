@@ -39,11 +39,12 @@ import {
   IconSortDescending,
   IconNews
 } from '@tabler/icons-react';
-import { modals } from '@mantine/modals';
 import { notifications } from '@mantine/notifications';
+import { modals } from '@mantine/modals';
 import { useRouter } from 'next/navigation';
 import { LoadingOverlay } from '@damon-stack/ui';
-import { api } from '../../../trpc/react';
+import { api } from '@/trpc/react';
+import { useCategoryOptions } from '@/hooks/useCategoryOptions';
 import type { PostWithRelations, PostStatus } from '@damon-stack/feature-cms';
 
 // 状态映射
@@ -65,8 +66,8 @@ export default function PostsListPage() {
     status: undefined as PostStatus | undefined,
     categoryId: undefined as string | undefined,
     featured: undefined as boolean | undefined,
-    sortBy: 'createdAt' as const,
-    sortOrder: 'desc' as const,
+    sortBy: 'createdAt' as 'createdAt' | 'updatedAt' | 'publishedAt' | 'title' | 'viewCount',
+    sortOrder: 'desc' as 'asc' | 'desc',
   });
 
   // 选中的行
@@ -286,7 +287,7 @@ export default function PostsListPage() {
                 onChange={(value) => 
                   setFilters(prev => ({ 
                     ...prev, 
-                    status: value || undefined, 
+                    status: (value as PostStatus) || undefined, 
                     page: 1 
                   }))
                 }
@@ -478,6 +479,18 @@ export default function PostsListPage() {
                             </ActionIcon>
                           </Tooltip>
 
+                          <Tooltip label="删除">
+                            <ActionIcon 
+                              variant="light" 
+                              size="sm"
+                              color="red"
+                              onClick={() => handleDeletePost(post)}
+                              loading={deleteMutation.isPending && deleteMutation.variables?.id === post.id}
+                            >
+                              <IconTrash size={16} />
+                            </ActionIcon>
+                          </Tooltip>
+
                           <Menu position="bottom-end">
                             <Menu.Target>
                               <ActionIcon variant="light" size="sm">
@@ -499,14 +512,6 @@ export default function PostsListPage() {
                                   设为{info.label}
                                 </Menu.Item>
                               ))}
-                              <Menu.Divider />
-                              <Menu.Item
-                                color="red"
-                                leftSection={<IconTrash size={14} />}
-                                onClick={() => handleDeletePost(post)}
-                              >
-                                删除
-                              </Menu.Item>
                             </Menu.Dropdown>
                           </Menu>
                         </Group>

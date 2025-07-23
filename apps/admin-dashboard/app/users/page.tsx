@@ -35,8 +35,9 @@ import {
   IconAlertTriangle,
   IconLock
 } from '@tabler/icons-react';
-import { useCurrentUser } from '../../hooks/use-current-user';
-import { api } from '../../trpc/react';
+import { useCurrentUser } from '@/hooks/use-current-user';
+import { api } from '@/trpc/react';
+import { modals } from '@mantine/modals';
 
 /**
  * 权限检查组件
